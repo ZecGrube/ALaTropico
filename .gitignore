@@ -1,0 +1,38 @@
+# Unity .gitignore
+
+[Aa]ssets/
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]serSettings/
+MemoryCaptures/
+Recorder/
+!/[Aa]ssets/**/*.meta
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# VS/Rider/other IDEs
+.vs/
+.idea/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svclog
+*.cache
+
+# Unity Packages
+/[Pp]ackages/*
+!/[Pp]ackages/manifest.json
+!/[Pp]ackages/packages-lock.json
+
+# Local config
+.localconfig
