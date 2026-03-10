@@ -97,14 +97,27 @@ namespace CaudilloBay.AI
 
         private bool HasRequiredResources()
         {
-            // logic to check if builder has what the building needs
+            if (currentTarget == null) return true;
+            foreach (var cost in currentTarget.buildCosts)
+            {
+                if (localInventory.GetAmount(cost.resourceType) < cost.amount) return false;
+            }
             return true;
         }
 
         private void CollectResourcesFromStorage()
         {
-            // logic to transfer from storage to builder
-            Debug.Log("Builder collected resources from storage.");
+            if (nearestStorage == null || currentTarget == null) return;
+
+            foreach (var cost in currentTarget.buildCosts)
+            {
+                float needed = cost.amount - localInventory.GetAmount(cost.resourceType);
+                if (needed > 0)
+                {
+                    nearestStorage.inventory.TransferTo(localInventory, cost.resourceType, needed);
+                }
+            }
+            Debug.Log($"Builder collected resources from storage for {currentTarget.displayName}.");
         }
 
         public void SetTargetConstruction(Transform target)

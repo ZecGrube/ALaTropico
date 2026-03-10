@@ -25,18 +25,30 @@ namespace CaudilloBay.Construction
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, terrainLayer))
             {
                 Vector2Int gridPos = TileManager.Instance.WorldToGrid(hit.point);
-                if (!TileManager.Instance.IsTileOccupied(gridPos))
+
+                if (CanPlaceAt(gridPos))
                 {
                     Vector3 spawnPos = TileManager.Instance.GridToWorld(gridPos);
-                    GameObject newBuilding = Instantiate(buildingPrefab, spawnPos, Quaternion.identity);
-                    TileManager.Instance.OccupyTile(gridPos, newBuilding);
+                    GameObject newBuildingObj = Instantiate(buildingPrefab, spawnPos, Quaternion.identity);
 
-                    if (currentBuilder != null)
+                    Building newBuilding = newBuildingObj.GetComponent<Building>();
+                    if (newBuilding != null)
                     {
-                        currentBuilder.SetTargetConstruction(newBuilding.transform);
+                        TileManager.Instance.OccupyTile(gridPos, newBuildingObj);
+                        TaskManager.Instance.AddConstructionTask(newBuilding);
                     }
                 }
             }
+        }
+
+        private bool CanPlaceAt(Vector2Int gridPos)
+        {
+            // 1. Is it occupied?
+            if (TileManager.Instance.IsTileOccupied(gridPos)) return false;
+
+            // 2. Is it water? (Simplification: check height or a specific layer if needed)
+            // For now, TileManager doesn't track type, but in a real case we'd query its TileData
+            return true;
         }
     }
 }

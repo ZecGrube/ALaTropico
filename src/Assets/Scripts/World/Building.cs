@@ -37,12 +37,22 @@ namespace CaudilloBay.World
         {
             if (isConstructed) return;
 
+            // Progress is only made if materials are provided (already checked by Builder AI usually)
             currentProgress += delta;
             if (currentProgress >= constructionTime)
             {
                 currentProgress = constructionTime;
                 CompleteConstruction();
             }
+        }
+
+        public bool AreMaterialsProvided()
+        {
+            foreach (var cost in buildCosts)
+            {
+                if (inventory.GetAmount(cost.resourceType) < cost.amount) return false;
+            }
+            return true;
         }
 
         protected virtual void CompleteConstruction()

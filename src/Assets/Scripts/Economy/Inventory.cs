@@ -51,5 +51,15 @@ namespace CaudilloBay.Economy
             }
             return total;
         }
+
+        public void TransferTo(Inventory other, ResourceType type, float amount)
+        {
+            float toTransfer = Mathf.Min(amount, GetAmount(type));
+            if (toTransfer > 0)
+            {
+                RemoveResource(type, toTransfer);
+                other.AddResource(type, toTransfer);
+            }
+        }
     }
 }

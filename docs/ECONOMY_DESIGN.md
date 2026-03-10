@@ -63,5 +63,21 @@ ConstructionSite -> Building: Update Progress
 Building -> Player: Construction Complete
 ```
 
+## 6. Class Relationships (Simplified)
+```text
+[ ScriptableObject ] <--- (describes) --- [ BuildingSettings ]
+      |                                       |
+      +--- (defines) --- [ ResourceType ]     | (instantiates)
+                              |               V
+[ Inventory ] <--- (manages) --- [ Building ] (Base)
+      ^                           /      \
+      |            [ ProducerBuilding ]  [ StorageBuilding ]
+      |                   (IProducer)
+      |
+[ BuilderAI ] --- (moves to) ---> [ ConstructionSite ]
+      |                                 |
+      +--- (queries) ---> [ TaskManager ] <--- (populates) --- [ PlacementSystem ]
+```
+
 ---
 *Note: This architecture ensures a clear flow of goods and labor, essential for the "Tropico-style" simulation.*
