@@ -1,0 +1,60 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+namespace CaudilloBay.World
+{
+    public class IslandGenerator : MonoBehaviour
+    {
+        [Header("Settings")]
+        public int width = 50;
+        public int height = 50;
+        public float scale = 10f;
+        public float waterThreshold = 0.3f;
+        public float sandThreshold = 0.4f;
+
+        [Header("Prefabs")]
+        public GameObject grassPrefab;
+        public GameObject sandPrefab;
+        public GameObject waterPrefab;
+
+        private Transform islandParent;
+
+        public void GenerateIsland()
+        {
+            if (islandParent != null)
+            {
+                DestroyImmediate(islandParent.gameObject);
+            }
+
+            islandParent = new GameObject("Island").transform;
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int z = 0; z < height; z++)
+                {
+                    float xCoord = (float)x / width * scale;
+                    float zCoord = (float)z / height * scale;
+                    float noise = Mathf.PerlinNoise(xCoord, zCoord);
+
+                    GameObject prefab = GetPrefabForNoise(noise);
+                    if (prefab != null)
+                    {
+                        Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity, islandParent);
+                    }
+                }
+            }
+        }
+
+        private GameObject GetPrefabForNoise(float noise)
+        {
+            if (noise < waterThreshold) return waterPrefab;
+            if (noise < sandThreshold) return sandPrefab;
+            return grassPrefab;
+        }
+
+        private void Start()
+        {
+            GenerateIsland();
+        }
+    }
+}
