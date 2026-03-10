@@ -1,0 +1,42 @@
+EditorUserBuildSettings:
+  m_SelectedBuildTargetGroup: 1
+  m_SelectedBuildTarget: 13
+GraphicsSettings:
+  m_ShaderPreloadSaveThreshold: 2048
+ProjectSettings:
+  m_ProjectName: Caudillo Bay
+  m_Company: El Presidente Corp
+  m_DefaultScreenOrientation: 3
+  m_TargetGlesGraphics: 1
+  m_TargetIOSGraphics: 1
+  m_TargetResolution: 0
+  m_iOSShowActivityIndicatorOnLoading: -1
+  m_AndroidShowActivityIndicatorOnLoading: -1
+  m_iOSAppStoreCategory: 7001
+  m_ScriptingBackend: 0
+  m_ApiCompatibilityLevel: 3
+  m_ActiveInputHandler: 2
+  m_CloudServiceEnabled:
+    Identity: false
+    Ads: false
+    Analytics: false
+    CloudBuild: false
+    CrashReporting: false
+    PerformanceReporting: false
+    Purchasing: false
+    Collaborate: false
+  m_BuildTargetOSX: []
+  m_BuildTargetStandalone: []
+  m_BuildTargetAndroid: []
+  m_BuildTargetiOS: []
+  m_BuildTargetWebGL: []
+  m_BuildTargetWSA: []
+  m_BuildTargetPS4: []
+  m_BuildTargetXboxOne: []
+  m_BuildTargetSwitch: []
+  m_BuildTargettvOS: []
+  m_BuildTargetLumin: []
+  m_BuildTargetBPS4: []
+  m_BuildTargetBXBoxOne: []
+  m_BuildTargetBPS5: []
+  m_BuildTargetBXBoxSeries: []
