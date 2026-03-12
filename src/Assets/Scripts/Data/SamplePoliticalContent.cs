@@ -10,6 +10,12 @@ namespace CaudilloBay.Data
         public Decree foodSubsidies;
         public Decree extraTaxes;
 
+        [Header("New Resources")]
+        public ResourceType sugar;
+        public ResourceType rum;
+        public ResourceType tobacco;
+        public ResourceType ironOre;
+
         public void SetupSampleData()
         {
             foodSubsidies = ScriptableObject.CreateInstance<Decree>();

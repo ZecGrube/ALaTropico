@@ -28,6 +28,13 @@ namespace CaudilloBay.Construction
 
                 if (CanPlaceAt(gridPos))
                 {
+                    Building buildingComp = buildingPrefab.GetComponent<Building>();
+                    if (buildingComp != null && !TechnologyManager.Instance.IsBuildingUnlocked(buildingComp.buildingId))
+                    {
+                        Debug.LogWarning("Building locked by technology!");
+                        return;
+                    }
+
                     Vector3 spawnPos = TileManager.Instance.GridToWorld(gridPos);
                     GameObject newBuildingObj = Instantiate(buildingPrefab, spawnPos, Quaternion.identity);
 
