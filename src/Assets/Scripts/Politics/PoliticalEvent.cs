@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace CaudilloBay.Politics
 {
@@ -9,7 +10,7 @@ namespace CaudilloBay.Politics
         [TextArea]
         public string eventDescription;
         public float baseChance = 0.1f;
-        public float peasantLoyaltyDelta;
+        public List<FactionEffect> loyaltyEffects;
         public float duration = 0f; // 0 for instant
     }
 }

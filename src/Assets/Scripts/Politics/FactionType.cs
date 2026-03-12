@@ -9,4 +9,11 @@ namespace CaudilloBay.Politics
         Nationalists,
         Environmentalists
     }
+
+    public enum PersonalityType
+    {
+        Aggressive,
+        Moderate,
+        Charismatic
+    }
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using CaudilloBay.Data;
+using CaudilloBay.Politics;
 
 namespace CaudilloBay.World
 {
@@ -11,6 +12,9 @@ namespace CaudilloBay.World
 
         [Header("Happiness State")]
         public float currentHappiness = 50f;
+
+        [Header("Faction Leanings")]
+        public FactionType primaryFaction = FactionType.Peasants;
 
         public float GetHappiness()
         {

@@ -11,8 +11,15 @@ namespace CaudilloBay.Politics
         public string description;
         public int mandateCost;
 
-        public float peasantLoyaltyEffect;
+        public List<FactionEffect> loyaltyEffects;
         public float taxModifier;
         public float wageModifier;
+    }
+
+    [System.Serializable]
+    public struct FactionEffect
+    {
+        public FactionType faction;
+        public float effect;
     }
 }

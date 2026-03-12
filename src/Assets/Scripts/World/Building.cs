@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CaudilloBay.Data;
 using CaudilloBay.Economy;
 using CaudilloBay.Core;
+using CaudilloBay.Politics;
 
 namespace CaudilloBay.World
 {
@@ -21,6 +22,10 @@ namespace CaudilloBay.World
 
         [Header("Economy")]
         public Inventory inventory = new Inventory();
+
+        [Header("Politics")]
+        public List<FactionType> favoredFactions;
+        public List<FactionType> dislikedFactions;
 
         // IPlaceable implementation
         public string Id => buildingId;

@@ -8,8 +8,8 @@ namespace CaudilloBay.Politics
     {
         public static FactionManager Instance { get; private set; }
 
-        [Header("Peasants Faction")]
-        public FactionData peasantFaction = new FactionData { type = FactionType.Peasants, displayName = "Peasants" };
+        [Header("Factions")]
+        public List<FactionData> factions = new List<FactionData>();
 
         [Header("Politics State")]
         public int currentMandate = 20;
@@ -36,38 +36,90 @@ namespace CaudilloBay.Politics
 
         private void MonthlyTick()
         {
-            UpdatePeasantLoyalty();
+            StatsManager.Instance.RefreshStats();
+            UpdateAllFactions();
             GenerateMandate();
+            CheckDemands();
             CheckRandomEvents();
-            Debug.Log($"Monthly Political Update: Loyalty {peasantFaction.loyalty}, Mandate {currentMandate}");
+            Debug.Log($"Monthly Political Update: Mandate {currentMandate}");
         }
 
-        private void UpdatePeasantLoyalty()
+        private void UpdateAllFactions()
         {
-            // Gather happiness from all residential buildings
-            ResidentialBuilding[] homes = UnityEngine.Object.FindObjectsByType<ResidentialBuilding>(FindObjectsSortMode.None);
-            if (homes.Length == 0) return;
-
-            float totalHappiness = 0;
-            foreach (var home in homes)
+            foreach (var faction in factions)
             {
-                totalHappiness += home.GetHappiness();
+                UpdateLoyaltyForFaction(faction);
+            }
+        }
+
+        private void UpdateLoyaltyForFaction(FactionData faction)
+        {
+            // Logic based on StatsManager and specific faction needs
+            float targetSatisfaction = 50f;
+
+            switch (faction.type)
+            {
+                case FactionType.Peasants:
+                    targetSatisfaction = StatsManager.Instance.averageHappiness;
+                    break;
+                case FactionType.Capitalists:
+                    // Placeholder: Capitalists like low tax (e.g. 100 - tax*100)
+                    targetSatisfaction = 70f;
+                    break;
+                // ... other factions
             }
 
-            float avgHappiness = totalHappiness / homes.Length;
-            // Shift loyalty towards average happiness (simplified)
-            peasantFaction.loyalty = Mathf.Lerp(peasantFaction.loyalty, avgHappiness, 0.2f);
+            faction.needsSatisfaction = Mathf.Lerp(faction.needsSatisfaction, targetSatisfaction, 0.1f);
+            faction.loyalty = Mathf.Lerp(faction.loyalty, faction.needsSatisfaction, 0.1f);
         }
 
         private void GenerateMandate()
         {
-            float bonus = (peasantFaction.loyalty - 50) / 10f;
+            float totalLoyalty = 0;
+            foreach(var f in factions) totalLoyalty += f.loyalty;
+            float avgLoyalty = factions.Count > 0 ? totalLoyalty / factions.Count : 50f;
+
+            float bonus = (avgLoyalty - 50) / 10f;
             currentMandate += Mathf.RoundToInt(monthlyMandateBase + bonus);
+        }
+
+        private void CheckDemands()
+        {
+            foreach (var faction in factions)
+            {
+                if (faction.loyalty < 30 && faction.activeDemands.Count == 0)
+                {
+                    GenerateDemandForFaction(faction);
+                }
+            }
+        }
+
+        private void GenerateDemandForFaction(FactionData faction)
+        {
+            Demand d = new Demand {
+                title = $"{faction.displayName} Demand",
+                description = "Build a new service building to satisfy our needs.",
+                type = DemandType.BuildBuilding,
+                rewardLoyalty = 10,
+                penaltyLoyalty = -15
+            };
+            faction.activeDemands.Add(d);
+            Debug.Log($"New Demand from {faction.displayName}!");
         }
 
         private void CheckRandomEvents()
         {
-            // Placeholder for event system logic
+            // Placeholder
+        }
+
+        public void ModifyRelations(FactionType a, FactionType b, float delta)
+        {
+            FactionData dataA = factions.Find(f => f.type == a);
+            if (dataA != null)
+            {
+                if (dataA.relations.ContainsKey(b)) dataA.relations[b] += delta;
+                else dataA.relations.Add(b, delta);
+            }
         }
 
         public void ApplyDecree(Decree decree)
@@ -75,7 +127,16 @@ namespace CaudilloBay.Politics
             if (currentMandate >= decree.mandateCost)
             {
                 currentMandate -= decree.mandateCost;
-                peasantFaction.loyalty += decree.peasantLoyaltyEffect;
+
+                foreach (var effect in decree.loyaltyEffects)
+                {
+                    FactionData targetFaction = factions.Find(f => f.type == effect.faction);
+                    if (targetFaction != null)
+                    {
+                        targetFaction.loyalty += effect.effect;
+                    }
+                }
+
                 Debug.Log($"Issued Decree: {decree.decreeName}");
             }
         }

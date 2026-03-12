@@ -21,7 +21,12 @@ namespace CaudilloBay.UI
         {
             if (FactionManager.Instance != null)
             {
-                loyaltyText.text = $"Peasants Loyalty: {FactionManager.Instance.peasantFaction.loyalty:F0}%";
+                string status = "Factions Loyalty:\n";
+                foreach (var f in FactionManager.Instance.factions)
+                {
+                    status += $"{f.displayName}: {f.loyalty:F0}%\n";
+                }
+                loyaltyText.text = status;
                 mandateText.text = $"Mandate: {FactionManager.Instance.currentMandate}";
             }
         }
