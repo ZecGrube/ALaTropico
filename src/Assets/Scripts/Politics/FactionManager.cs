@@ -41,6 +41,10 @@ namespace CaudilloBay.Politics
             GenerateMandate();
             CheckDemands();
             CheckRandomEvents();
+
+            if (CoupManager.Instance != null)
+                CoupManager.Instance.CheckCoupConditions();
+
             Debug.Log($"Monthly Political Update: Mandate {currentMandate}");
         }
 
