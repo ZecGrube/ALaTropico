@@ -95,6 +95,9 @@ namespace CaudilloBay.Core
             public float crimeRate;
             public float educationLevel;
             public float healthLevel;
+            public float cultureLevel;
+            public float armyTraining;
+            public float armyLoyalty;
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -198,6 +201,17 @@ namespace CaudilloBay.Core
             if (HealthManager.Instance != null)
             {
                 data.healthLevel = HealthManager.Instance.globalHealthLevel;
+            }
+
+            if (CultureManager.Instance != null)
+            {
+                data.cultureLevel = CultureManager.Instance.globalCultureLevel;
+            }
+
+            if (MilitaryManager.Instance != null)
+            {
+                data.armyTraining = MilitaryManager.Instance.trainingLevel;
+                data.armyLoyalty = MilitaryManager.Instance.armyLoyalty;
             }
 
             if (StatsManager.Instance != null)
@@ -330,6 +344,18 @@ namespace CaudilloBay.Core
             if (HealthManager.Instance != null)
             {
                 HealthManager.Instance.globalHealthLevel = data.healthLevel;
+            }
+
+            if (CultureManager.Instance != null)
+            {
+                CultureManager.Instance.globalCultureLevel = data.cultureLevel;
+            }
+
+            if (MilitaryManager.Instance != null)
+            {
+                MilitaryManager.Instance.trainingLevel = data.armyTraining;
+                MilitaryManager.Instance.armyLoyalty = data.armyLoyalty;
+                MilitaryManager.Instance.UpdateMilitaryStrength();
             }
 
             // Restore buildings

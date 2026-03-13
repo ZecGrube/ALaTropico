@@ -39,7 +39,19 @@ namespace CaudilloBay.UI
                 healthInfo = $" | HP: {CaudilloBay.Core.HealthManager.Instance.globalHealthLevel:F1}%";
             }
 
-            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}{educationInfo}{healthInfo}";
+            string militaryInfo = "";
+            if (CaudilloBay.Politics.MilitaryManager.Instance != null)
+            {
+                militaryInfo = $" | MIL: {CaudilloBay.Politics.MilitaryManager.Instance.totalMilitaryStrength:F0}";
+            }
+
+            string cultureInfo = "";
+            if (CaudilloBay.Core.CultureManager.Instance != null)
+            {
+                cultureInfo = $" | CULT: {CaudilloBay.Core.CultureManager.Instance.globalCultureLevel:F1}%";
+            }
+
+            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}{educationInfo}{healthInfo}{militaryInfo}{cultureInfo}";
         }
     }
 }

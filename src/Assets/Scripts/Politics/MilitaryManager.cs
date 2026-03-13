@@ -8,6 +8,9 @@ namespace CaudilloBay.Politics
         public static MilitaryManager Instance { get; private set; }
 
         public float totalMilitaryStrength = 0f;
+        public float baseStrength = 0f;
+        public float trainingLevel = 50f;
+        public float readiness = 100f;
         public float armyLoyalty = 50f;
 
         private void Awake()
@@ -18,12 +21,19 @@ namespace CaudilloBay.Politics
 
         public void AddBarracksStrength(float strength)
         {
-            totalMilitaryStrength += strength;
+            baseStrength += strength;
+            UpdateMilitaryStrength();
         }
 
         public void RemoveBarracksStrength(float strength)
         {
-            totalMilitaryStrength -= strength;
+            baseStrength -= strength;
+            UpdateMilitaryStrength();
+        }
+
+        public void UpdateMilitaryStrength()
+        {
+            totalMilitaryStrength = baseStrength * (trainingLevel / 100f) * (readiness / 100f);
         }
 
         public void UpdateArmyLoyalty(float delta)

@@ -21,6 +21,12 @@ namespace CaudilloBay.Economy
 
         public void UpdateTourism(float totalAttractiveness, float safetyFactor)
         {
+            // Culture bonus to attractiveness
+            if (Core.CultureManager.Instance != null)
+            {
+                totalAttractiveness += Core.CultureManager.Instance.globalCultureLevel;
+            }
+
             // Override safetyFactor with crime rate if CrimeManager is present
             if (Core.CrimeManager.Instance != null)
             {

@@ -70,6 +70,9 @@ namespace CaudilloBay.Politics
             if (Core.HealthManager.Instance != null)
                 Core.HealthManager.Instance.ProcessMonthlyHealth();
 
+            if (Core.CultureManager.Instance != null)
+                Core.CultureManager.Instance.ProcessMonthlyCulture();
+
             CheckRandomEvents();
 
             if (CoupManager.Instance != null)
