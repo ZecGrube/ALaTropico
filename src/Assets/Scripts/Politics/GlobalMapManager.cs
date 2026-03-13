@@ -114,5 +114,43 @@ namespace CaudilloBay.Politics
             bodyguards.Add(bg);
             agentPool.Add(bg);
         }
+
+        public List<BodyguardSaveData> GetBodyguardData()
+        {
+            List<BodyguardSaveData> list = new List<BodyguardSaveData>();
+            foreach (var bg in bodyguards)
+            {
+                list.Add(new BodyguardSaveData {
+                    name = bg.agentName,
+                    stealth = bg.stealth,
+                    combat = bg.combat,
+                    missionIndex = bg.currentMissionIndex
+                });
+            }
+            return list;
+        }
+
+        public void LoadBodyguardData(List<BodyguardSaveData> data)
+        {
+            foreach (var d in data)
+            {
+                var bg = bodyguards.Find(b => b.agentName == d.name);
+                if (bg != null)
+                {
+                    bg.stealth = d.stealth;
+                    bg.combat = d.combat;
+                    bg.currentMissionIndex = d.missionIndex;
+                }
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class BodyguardSaveData
+    {
+        public string name;
+        public float stealth;
+        public float combat;
+        public int missionIndex;
     }
 }

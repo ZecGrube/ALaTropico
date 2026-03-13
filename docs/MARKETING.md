@@ -44,3 +44,17 @@ Set on a vibrant Caribbean island during the height of a fictional Cold War, *Ca
 **Media Contact:**
 press@caudillobay.com
 www.caudillobay.com/press
+
+---
+
+## 3. Gold Master Announcement (Draft)
+
+**EL PRESIDENTE DECLARES: CAUDILLO BAY IS GOLD!**
+
+Citizens, rejoice! His Excellency El Presidente has officially signed off on the final master version of *Caudillo Bay*. After months of rigorous testing (and only a few minor deportations), the jewel of the Caribbean is ready for the world to see.
+
+"The economy is stable, the rebels are... 'on vacation', and the rum is flowing," announced the Ministry of Truth. "There has never been a better time to be a dictator."
+
+*Caudillo Bay* launches on Steam in 48 hours. Secure your mandate. Pre-order now to receive the exclusive 'Golden Mustache' cosmetic set for El Presidente.
+
+**Viva El Presidente!**

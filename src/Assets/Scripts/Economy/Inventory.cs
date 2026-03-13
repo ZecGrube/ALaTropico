@@ -61,5 +61,21 @@ namespace CaudilloBay.Economy
                 other.AddResource(type, toTransfer);
             }
         }
+
+        public List<string> GetStoredResourceIds()
+        {
+            List<string> ids = new List<string>();
+            foreach (var r in resources.Keys) ids.Add(r.resourceId);
+            return ids;
+        }
+
+        public float GetAmountById(string resourceId)
+        {
+            foreach (var kvp in resources)
+            {
+                if (kvp.Key.resourceId == resourceId) return kvp.Value;
+            }
+            return 0f;
+        }
     }
 }

@@ -1,8 +1,8 @@
 # Caudillo Bay - Release Checklist
 
 ## 1. Technical (QA)
-- [ ] Final build compiles without errors/warnings.
-- [ ] Save/Load system verified (JSON serialization works).
+- [x] Final build compiles without errors/warnings.
+- [x] Save/Load system verified (JSON serialization works, includes resources and research).
 - [ ] Performance check: 30 FPS minimum on target hardware with 10k agents.
 - [ ] All "P0" and "P1" bugs from `BUG_TRACKER.md` resolved.
 - [ ] Credits list updated and verified.

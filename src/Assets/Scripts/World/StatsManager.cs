@@ -51,6 +51,19 @@ namespace CaudilloBay.World
 
                 pollutionSum += b.pollutionOutput;
 
+                // Aggregate inventories into global stockpiles
+                if (b.inventory != null)
+                {
+                    foreach (var resourceId in b.inventory.GetStoredResourceIds())
+                    {
+                        float amount = b.inventory.GetAmountById(resourceId);
+                        if (globalStockpiles.ContainsKey(resourceId))
+                            globalStockpiles[resourceId] += amount;
+                        else
+                            globalStockpiles.Add(resourceId, amount);
+                    }
+                }
+
                 if (b is ResidentialBuilding rb)
                 {
                     happinessSum += rb.GetHappiness();

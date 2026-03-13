@@ -87,14 +87,37 @@ namespace CaudilloBay.World
 
         public bool IsBuildingUnlocked(string buildingId)
         {
-            // Initial technologies might unlock multiple buildings
-            // In a real system, we'd check if any researched tech contains this building prefab/id
-            return true; // Placeholder for now
+            // For now, if it's not explicitly in any tech's unlock list, it's considered free
+            // If it is in an unlock list, check if that tech is researched
+            bool foundInAnyTech = false;
+            foreach (var tech in allTechnologies)
+            {
+                foreach (var prefab in tech.unlockedBuildings)
+                {
+                    if (prefab != null && prefab.name == buildingId)
+                    {
+                        foundInAnyTech = true;
+                        if (IsResearched(tech.techId)) return true;
+                    }
+                }
+            }
+            return !foundInAnyTech;
         }
 
         public bool IsResearched(string techId)
         {
             return researchedTechIds.Contains(techId);
+        }
+
+        public List<string> GetResearchedTechIds()
+        {
+            return new List<string>(researchedTechIds);
+        }
+
+        public void LoadResearchedTechs(List<string> ids)
+        {
+            researchedTechIds.Clear();
+            foreach (var id in ids) researchedTechIds.Add(id);
         }
     }
 }

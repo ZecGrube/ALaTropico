@@ -29,23 +29,30 @@ namespace CaudilloBay.Politics
             monthlyTimer += Time.deltaTime;
             if (monthlyTimer >= monthLength)
             {
-                MonthlyTick();
+                StartCoroutine(MonthlyTickCoroutine());
                 monthlyTimer = 0f;
             }
         }
 
-        private void MonthlyTick()
+        private System.Collections.IEnumerator MonthlyTickCoroutine()
         {
+            // Spread expensive calculations over multiple frames
             StatsManager.Instance.RefreshStats();
+            yield return null;
+
             UpdateAllFactions();
+            yield return null;
+
             GenerateMandate();
             CheckDemands();
+            yield return null;
+
             CheckRandomEvents();
 
             if (CoupManager.Instance != null)
                 CoupManager.Instance.CheckCoupConditions();
 
-            Debug.Log($"Monthly Political Update: Mandate {currentMandate}");
+            Debug.Log($"Monthly Political Update Complete: Mandate {currentMandate}");
         }
 
         private void UpdateAllFactions()

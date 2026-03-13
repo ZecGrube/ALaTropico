@@ -17,13 +17,22 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class ResourceSaveData
+        {
+            public string resourceId;
+            public float amount;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public float legitimacy;
             public int mandate;
             public float pollution;
             public List<FactionSaveData> factions = new List<FactionSaveData>();
-            // Resource stockpiles could be added here as well
+            public List<ResourceSaveData> resources = new List<ResourceSaveData>();
+            public List<string> researchedTechs = new List<string>();
+            public List<BodyguardSaveData> bodyguards = new List<BodyguardSaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -48,7 +57,23 @@ namespace CaudilloBay.Core
             }
 
             if (StatsManager.Instance != null)
+            {
                 data.pollution = StatsManager.Instance.globalPollution;
+                foreach (var entry in StatsManager.Instance.globalStockpiles)
+                {
+                    data.resources.Add(new ResourceSaveData { resourceId = entry.Key, amount = entry.Value });
+                }
+            }
+
+            if (TechnologyManager.Instance != null)
+            {
+                data.researchedTechs = TechnologyManager.Instance.GetResearchedTechIds();
+            }
+
+            if (GlobalMapManager.Instance != null)
+            {
+                data.bodyguards = GlobalMapManager.Instance.GetBodyguardData();
+            }
 
             string json = JsonUtility.ToJson(data, true);
             string path = Path.Combine(Application.persistentDataPath, fileName);
@@ -88,7 +113,24 @@ namespace CaudilloBay.Core
             }
 
             if (StatsManager.Instance != null)
+            {
                 StatsManager.Instance.globalPollution = data.pollution;
+                StatsManager.Instance.globalStockpiles.Clear();
+                foreach (var rs in data.resources)
+                {
+                    StatsManager.Instance.globalStockpiles.Add(rs.resourceId, rs.amount);
+                }
+            }
+
+            if (TechnologyManager.Instance != null)
+            {
+                TechnologyManager.Instance.LoadResearchedTechs(data.researchedTechs);
+            }
+
+            if (GlobalMapManager.Instance != null)
+            {
+                GlobalMapManager.Instance.LoadBodyguardData(data.bodyguards);
+            }
 
             Debug.Log("Game loaded successfully.");
         }

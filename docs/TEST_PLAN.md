@@ -37,9 +37,9 @@
 
 ## 4. Technical
 ### 4.1 Save/Load
-- [ ] Save game, quit, and load back. Verify all resources and faction stats.
+- [x] Save game, quit, and load back. Verify all resources and faction stats. (Note: Resources/Research currently missing)
 - [ ] Test loading an older version save (if applicable).
 
 ### 4.2 Performance
 - [ ] Test FPS stability with 100+ agents and 50+ buildings.
-- [ ] Profile monthly calculation spikes.
+- [x] Profile monthly calculation spikes. (Confirmed spike during MonthlyTick)
