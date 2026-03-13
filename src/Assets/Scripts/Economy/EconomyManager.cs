@@ -11,6 +11,7 @@ namespace CaudilloBay.Economy
 
         [Header("National Treasury")]
         public float treasuryBalance = 5000f;
+        public float taxPerCitizen = 12f;
 
         private void Awake()
         {
@@ -30,24 +31,59 @@ namespace CaudilloBay.Economy
             {
                 if (b == null || !b.IsConstructed) continue;
 
-                // 1. Maintenance
                 totalMaintenance += b.data.maintenanceCost;
 
-                // 2. Production/Consumption (for Producers)
                 if (b is ProducerBuilding pb)
                 {
                     pb.ProduceCycle();
                 }
 
-                // 3. Pollution
+                if (b is Museum museum)
+                {
+                    museum.ProcessMonthlyArtifacts();
+                }
+
+                if (b is ShadowEconomyBuilding shadow)
+                {
+                    shadow.ProcessMonthlyShadowIncome();
+                }
+
                 totalPollution += b.pollutionOutput;
 
-                // 4. Political Effects (Monthly)
                 ApplyMonthlyPoliticalEffects(b);
             }
 
-            treasuryBalance -= totalMaintenance;
-            Debug.Log($"Monthly Economy processed. Total Maintenance: {totalMaintenance}. Treasury: {treasuryBalance}");
+            float grossTaxRevenue = CalculateGrossTaxes();
+            float netTaxRevenue = grossTaxRevenue;
+            if (CorruptionManager.Instance != null)
+            {
+                netTaxRevenue = CorruptionManager.Instance.ApplyTaxLeakage(grossTaxRevenue);
+            }
+
+            float militaryUpkeep = 0f;
+            if (MilitaryManager.Instance != null)
+            {
+                militaryUpkeep = MilitaryManager.Instance.CalculateMonthlyUpkeep();
+                MilitaryManager.Instance.ApplyMonthlyBudgetPressure(treasuryBalance);
+            }
+
+            float cultureSpending = 0f;
+            if (CultureManager.Instance != null)
+            {
+                CultureManager.Instance.ProcessMonthlyCulture();
+                cultureSpending = CultureManager.Instance.monthlySubsidyCost;
+            }
+
+            treasuryBalance += netTaxRevenue;
+            treasuryBalance -= totalMaintenance + militaryUpkeep + cultureSpending;
+
+            Debug.Log($"Monthly Economy processed. Taxes(gross/net): {grossTaxRevenue}/{netTaxRevenue}, Maintenance: {totalMaintenance}, Military: {militaryUpkeep}, Culture: {cultureSpending}. Treasury: {treasuryBalance}");
+        }
+
+        private float CalculateGrossTaxes()
+        {
+            if (AI.PopulationManager.Instance == null) return 0f;
+            return AI.PopulationManager.Instance.allCitizens.Count * taxPerCitizen;
         }
 
         private void ApplyMonthlyPoliticalEffects(Building b)
@@ -59,8 +95,6 @@ namespace CaudilloBay.Economy
                 var faction = FactionManager.Instance.factions.Find(f => f.type == effect.faction);
                 if (faction != null)
                 {
-                    // Monthly effect could be a fraction of the build effect, or a separate field
-                    // For now, let's assume loyaltyEffects in BuildingData are applied monthly if the building exists
                     faction.loyalty = Mathf.Clamp(faction.loyalty + effect.effect, 0, 100);
                 }
             }

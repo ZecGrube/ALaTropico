@@ -57,6 +57,30 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class HeirSupportSaveData
+        {
+            public FactionType faction;
+            public float support;
+        }
+
+        [System.Serializable]
+        public class HeirSaveData
+        {
+            public string heirName;
+            public int age;
+            public Politics.HeirGender gender;
+            public float charisma;
+            public float cruelty;
+            public float intelligence;
+            public float military;
+            public float loyaltyToRuler;
+            public float jealousy;
+            public bool isAlive;
+            public List<HeirSupportSaveData> factionSupport = new List<HeirSupportSaveData>();
+            public List<Politics.SecretTrait> secretTraits = new List<Politics.SecretTrait>();
+        }
+
+        [System.Serializable]
         public class SaveMetadata
         {
             public string fileName;
@@ -95,6 +119,14 @@ namespace CaudilloBay.Core
             public float crimeRate;
             public float educationLevel;
             public float healthLevel;
+            public float armyStrength;
+            public float trainingLevel;
+            public float armyLoyalty;
+            public float cultureLevel;
+            public float corruptionLevel;
+            public float blackMarketMoney;
+            public HeirSaveData rulerData;
+            public List<HeirSaveData> heirs = new List<HeirSaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -198,6 +230,33 @@ namespace CaudilloBay.Core
             if (HealthManager.Instance != null)
             {
                 data.healthLevel = HealthManager.Instance.globalHealthLevel;
+            }
+
+            if (MilitaryManager.Instance != null)
+            {
+                data.armyStrength = MilitaryManager.Instance.armyStrength;
+                data.trainingLevel = MilitaryManager.Instance.trainingLevel;
+                data.armyLoyalty = MilitaryManager.Instance.armyLoyalty;
+            }
+
+            if (CultureManager.Instance != null)
+            {
+                data.cultureLevel = CultureManager.Instance.cultureLevel;
+            }
+
+            if (CorruptionManager.Instance != null)
+            {
+                data.corruptionLevel = CorruptionManager.Instance.corruptionLevel;
+                data.blackMarketMoney = CorruptionManager.Instance.blackMarketMoney;
+            }
+
+            if (DynastyManager.Instance != null)
+            {
+                data.rulerData = BuildHeirSaveData(DynastyManager.Instance.currentRuler);
+                foreach (var heir in DynastyManager.Instance.heirs)
+                {
+                    data.heirs.Add(BuildHeirSaveData(heir));
+                }
             }
 
             if (StatsManager.Instance != null)
@@ -332,6 +391,52 @@ namespace CaudilloBay.Core
                 HealthManager.Instance.globalHealthLevel = data.healthLevel;
             }
 
+            if (MilitaryManager.Instance != null)
+            {
+                MilitaryManager.Instance.armyStrength = data.armyStrength;
+                MilitaryManager.Instance.trainingLevel = data.trainingLevel;
+                MilitaryManager.Instance.armyLoyalty = data.armyLoyalty;
+            }
+
+            if (CultureManager.Instance != null)
+            {
+                CultureManager.Instance.cultureLevel = data.cultureLevel;
+            }
+
+            if (CorruptionManager.Instance != null)
+            {
+                CorruptionManager.Instance.corruptionLevel = data.corruptionLevel;
+                CorruptionManager.Instance.blackMarketMoney = data.blackMarketMoney;
+            }
+
+            if (DynastyManager.Instance != null)
+            {
+                DynastyManager.Instance.currentRuler = BuildHeirFromSaveData(data.rulerData);
+                if (DynastyManager.Instance.currentRuler == null)
+                {
+                    DynastyManager.Instance.currentRuler = new Heir
+                    {
+                        heirName = "El Presidente",
+                        age = 45,
+                        gender = HeirGender.Male,
+                        isAlive = true,
+                        loyaltyToRuler = 100f
+                    };
+                    DynastyManager.Instance.currentRuler.GenerateRandomStats();
+                }
+
+                DynastyManager.Instance.heirs.Clear();
+                if (data.heirs != null)
+                {
+                    foreach (var heirData in data.heirs)
+                    {
+                        Heir loadedHeir = BuildHeirFromSaveData(heirData);
+                        if (loadedHeir != null) DynastyManager.Instance.heirs.Add(loadedHeir);
+                    }
+                }
+                DynastyManager.Instance.UpdateHeirSupportFromFactions();
+            }
+
             // Restore buildings
             foreach (var bs in data.buildings)
             {
@@ -353,6 +458,60 @@ namespace CaudilloBay.Core
             }
 
             Debug.Log("Game loaded successfully.");
+        }
+
+        private HeirSaveData BuildHeirSaveData(Heir heir)
+        {
+            if (heir == null) return null;
+
+            HeirSaveData data = new HeirSaveData
+            {
+                heirName = heir.heirName,
+                age = heir.age,
+                gender = heir.gender,
+                charisma = heir.charisma,
+                cruelty = heir.cruelty,
+                intelligence = heir.intelligence,
+                military = heir.military,
+                loyaltyToRuler = heir.loyaltyToRuler,
+                jealousy = heir.jealousy,
+                isAlive = heir.isAlive,
+                secretTraits = new List<SecretTrait>(heir.secretTraits)
+            };
+
+            foreach (var entry in heir.factionSupport)
+            {
+                data.factionSupport.Add(new HeirSupportSaveData { faction = entry.Key, support = entry.Value });
+            }
+
+            return data;
+        }
+
+        private Heir BuildHeirFromSaveData(HeirSaveData data)
+        {
+            if (data == null) return null;
+
+            Heir heir = new Heir
+            {
+                heirName = data.heirName,
+                age = data.age,
+                gender = data.gender,
+                charisma = data.charisma,
+                cruelty = data.cruelty,
+                intelligence = data.intelligence,
+                military = data.military,
+                loyaltyToRuler = data.loyaltyToRuler,
+                jealousy = data.jealousy,
+                isAlive = data.isAlive,
+                secretTraits = new List<SecretTrait>(data.secretTraits)
+            };
+
+            foreach (var support in data.factionSupport)
+            {
+                heir.factionSupport[support.faction] = support.support;
+            }
+
+            return heir;
         }
 
         public List<SaveMetadata> GetAllSaveFiles()

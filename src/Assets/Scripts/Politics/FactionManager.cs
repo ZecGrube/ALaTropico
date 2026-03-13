@@ -70,6 +70,17 @@ namespace CaudilloBay.Politics
             if (Core.HealthManager.Instance != null)
                 Core.HealthManager.Instance.ProcessMonthlyHealth();
 
+            if (CorruptionManager.Instance != null)
+                CorruptionManager.Instance.ProcessMonthlyCorruption();
+
+            if (DynastyManager.Instance != null)
+                DynastyManager.Instance.ProcessMonthlyDynasty();
+
+            ApplyCorruptionFactionEffects();
+
+            if (DynastyManager.Instance != null)
+                DynastyManager.Instance.UpdateHeirSupportFromFactions();
+
             CheckRandomEvents();
 
             if (CoupManager.Instance != null)
@@ -153,6 +164,63 @@ namespace CaudilloBay.Politics
         private void CheckRandomEvents()
         {
             // Placeholder
+        }
+
+        private void ApplyCorruptionFactionEffects()
+        {
+            if (CorruptionManager.Instance == null) return;
+
+            float corruption = CorruptionManager.Instance.corruptionLevel;
+            foreach (var faction in factions)
+            {
+                switch (faction.type)
+                {
+                    case FactionType.Capitalists:
+                    case FactionType.Criminals:
+                        faction.loyalty = Mathf.Clamp(faction.loyalty + (corruption * 0.01f), 0f, 100f);
+                        break;
+                    case FactionType.Religious:
+                    case FactionType.Nationalists:
+                        faction.loyalty = Mathf.Clamp(faction.loyalty - (corruption * 0.015f), 0f, 100f);
+                        break;
+                }
+            }
+        }
+
+        public bool BribeFaction(FactionType factionType, float blackMarketAmount, float loyaltyGain)
+        {
+            if (CorruptionManager.Instance == null) return false;
+
+            FactionData targetFaction = factions.Find(f => f.type == factionType);
+            if (targetFaction == null) return false;
+
+            if (!CorruptionManager.Instance.SpendBlackMarketMoney(blackMarketAmount)) return false;
+
+            targetFaction.loyalty = Mathf.Clamp(targetFaction.loyalty + loyaltyGain, 0f, 100f);
+            CorruptionManager.Instance.corruptionLevel = Mathf.Clamp(CorruptionManager.Instance.corruptionLevel + 2f, 0f, 100f);
+            return true;
+        }
+
+        public Heir GetPreferredHeir(FactionData faction)
+        {
+            if (DynastyManager.Instance == null || faction == null) return null;
+
+            Heir bestHeir = null;
+            float bestSupport = float.MinValue;
+
+            foreach (var heir in DynastyManager.Instance.heirs)
+            {
+                if (heir == null || !heir.isAlive) continue;
+
+                float support = heir.factionSupport.ContainsKey(faction.type) ? heir.factionSupport[faction.type] : 0f;
+                if (support > bestSupport)
+                {
+                    bestSupport = support;
+                    bestHeir = heir;
+                }
+            }
+
+            return bestHeir;
         }
 
         public void ModifyRelations(FactionType a, FactionType b, float delta)

@@ -7,7 +7,8 @@ namespace CaudilloBay.Politics
         Communists,
         Religious,
         Nationalists,
-        Environmentalists
+        Environmentalists,
+        Criminals
     }
 
     public enum PersonalityType

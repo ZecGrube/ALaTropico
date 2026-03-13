@@ -61,7 +61,7 @@ namespace CaudilloBay.Politics
 
             if (suppress)
             {
-                float governmentStrength = MilitaryManager.Instance.totalMilitaryStrength * (MilitaryManager.Instance.armyLoyalty / 100f);
+                float governmentStrength = MilitaryManager.Instance.CalculateDefensePower();
                 if (governmentStrength >= coupPower)
                 {
                     Debug.Log("Coup Suppressed by military force.");

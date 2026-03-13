@@ -27,8 +27,14 @@ namespace CaudilloBay.Economy
                 safetyFactor = Mathf.Clamp01(1.0f - (Core.CrimeManager.Instance.globalCrimeRate / 100f));
             }
 
+            float cultureMultiplier = 1f;
+            if (CultureManager.Instance != null)
+            {
+                cultureMultiplier = CultureManager.Instance.GetTourismMultiplier();
+            }
+
             // Simplified flow calculation
-            float targetTourists = totalAttractiveness * safetyFactor * 10f;
+            float targetTourists = totalAttractiveness * safetyFactor * cultureMultiplier * 10f;
             currentTourists = Mathf.RoundToInt(Mathf.Lerp(currentTourists, targetTourists, 0.1f));
 
             float income = currentTourists * monthlyIncomePerTourist;
