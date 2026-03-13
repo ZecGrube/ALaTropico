@@ -6,6 +6,10 @@ namespace CaudilloBay.World
 {
     public class ResidentialBuilding : Building
     {
+        [Header("Residents")]
+        public int capacity = 4;
+        public List<CaudilloBay.AI.Citizen> residents = new List<CaudilloBay.AI.Citizen>();
+
         [Header("Resident Needs")]
         public ResourceType foodType;
         public float foodConsumptionPerMonth = 1.0f;
@@ -34,7 +38,11 @@ namespace CaudilloBay.World
         protected override void CompleteConstruction()
         {
             base.CompleteConstruction();
-            // Start consuming food if built
+
+            if (CaudilloBay.AI.PopulationManager.Instance != null)
+            {
+                CaudilloBay.AI.PopulationManager.Instance.RegisterResidential(this, capacity);
+            }
         }
     }
 }

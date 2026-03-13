@@ -76,10 +76,16 @@ namespace CaudilloBay.Politics
             // Logic based on StatsManager and specific faction needs
             float targetSatisfaction = 50f;
 
+            if (AI.PopulationManager.Instance != null)
+            {
+                // Incorporate overall citizen satisfaction
+                targetSatisfaction = Mathf.Lerp(targetSatisfaction, AI.PopulationManager.Instance.averageSatisfaction, 0.5f);
+            }
+
             switch (faction.type)
             {
                 case FactionType.Peasants:
-                    targetSatisfaction = StatsManager.Instance.averageHappiness;
+                    targetSatisfaction = Mathf.Lerp(targetSatisfaction, StatsManager.Instance.averageHappiness, 0.5f);
                     break;
                 case FactionType.Capitalists:
                     // Placeholder: Capitalists like low tax (e.g. 100 - tax*100)

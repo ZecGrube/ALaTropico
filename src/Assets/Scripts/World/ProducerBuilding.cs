@@ -15,8 +15,24 @@ namespace CaudilloBay.World
 
         private void Update()
         {
-            // The EconomyManager handles monthly production now, but we keep this for real-time visual feedback if needed
-            // Or we can move logic entirely to EconomyManager
+            if (IsConstructed && !HasInputResources())
+            {
+                RequestInputs();
+            }
+        }
+
+        private void RequestInputs()
+        {
+            if (Economy.LogisticsManager.Instance == null) return;
+
+            foreach (var input in data.consumption)
+            {
+                if (inventory.GetAmount(input.resourceType) < input.amount)
+                {
+                    // Logic to find a storage and create order would go here
+                    // LogisticsManager.Instance.CreateOrder(source, this, input.resourceType, input.amount);
+                }
+            }
         }
 
         public void ProduceCycle()

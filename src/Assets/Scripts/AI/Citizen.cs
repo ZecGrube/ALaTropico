@@ -1,0 +1,99 @@
+using UnityEngine;
+using UnityEngine.AI;
+using CaudilloBay.World;
+using CaudilloBay.Data;
+
+namespace CaudilloBay.AI
+{
+    public enum CitizenState { Idle, GoingToWork, Working, GoingHome, SeekingFood }
+
+    [RequireComponent(typeof(NavMeshAgent))]
+    public class Citizen : MonoBehaviour
+    {
+        [Header("Profile")]
+        public int id;
+        public CitizenState currentState = CitizenState.Idle;
+        public float satisfaction = 50f;
+
+        [Header("Associations")]
+        public ResidentialBuilding home;
+        public Building workplace;
+
+        [Header("Needs")]
+        public float hunger = 0f;
+        public float hungerRate = 0.1f;
+
+        private NavMeshAgent agent;
+
+        private void Start()
+        {
+            agent = GetComponent<NavMeshAgent>();
+        }
+
+        private void Update()
+        {
+            UpdateNeeds();
+            UpdateBehavior();
+        }
+
+        private void UpdateNeeds()
+        {
+            hunger += hungerRate * Time.deltaTime;
+            if (hunger > 80f)
+            {
+                // Trigger seek food logic
+            }
+        }
+
+        private void UpdateBehavior()
+        {
+            switch (currentState)
+            {
+                case CitizenState.Idle:
+                    if (workplace != null && IsWorkTime())
+                        GoToWork();
+                    break;
+                case CitizenState.GoingToWork:
+                    if (agent.remainingDistance < 1f)
+                    {
+                        currentState = CitizenState.Working;
+                        agent.isStopped = true;
+                    }
+                    break;
+                case CitizenState.Working:
+                    if (!IsWorkTime())
+                        GoHome();
+                    break;
+                case CitizenState.GoingHome:
+                    if (agent.remainingDistance < 1f)
+                    {
+                        currentState = CitizenState.Idle;
+                        agent.isStopped = true;
+                    }
+                    break;
+            }
+        }
+
+        private bool IsWorkTime()
+        {
+            // Placeholder for game time logic
+            return true;
+        }
+
+        public void GoToWork()
+        {
+            if (workplace == null) return;
+            currentState = CitizenState.GoingToWork;
+            agent.isStopped = false;
+            agent.SetDestination(workplace.transform.position);
+        }
+
+        public void GoHome()
+        {
+            if (home == null) return;
+            currentState = CitizenState.GoingHome;
+            agent.isStopped = false;
+            agent.SetDestination(home.transform.position);
+        }
+    }
+}

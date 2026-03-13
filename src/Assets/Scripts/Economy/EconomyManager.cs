@@ -23,6 +23,9 @@ namespace CaudilloBay.Economy
             float totalMaintenance = 0f;
             float totalPollution = 0f;
 
+            if (AI.PopulationManager.Instance != null)
+                AI.PopulationManager.Instance.UpdateGlobalStats();
+
             foreach (var b in buildings)
             {
                 if (b == null || !b.IsConstructed) continue;
