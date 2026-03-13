@@ -32,6 +32,14 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class SaveMetadata
+        {
+            public string fileName;
+            public string islandName;
+            public string date;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public float legitimacy;
@@ -158,6 +166,36 @@ namespace CaudilloBay.Core
             }
 
             Debug.Log("Game loaded successfully.");
+        }
+
+        public List<SaveMetadata> GetAllSaveFiles()
+        {
+            List<SaveMetadata> results = new List<SaveMetadata>();
+            string path = Application.persistentDataPath;
+            string[] files = Directory.GetFiles(path, "*.json");
+
+            foreach (string file in files)
+            {
+                FileInfo info = new FileInfo(file);
+                results.Add(new SaveMetadata
+                {
+                    fileName = info.Name,
+                    islandName = "Island Paradise", // Placeholder: would be in file
+                    date = info.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
+                });
+            }
+
+            return results;
+        }
+
+        public void DeleteSave(string fileName)
+        {
+            string path = Path.Combine(Application.persistentDataPath, fileName);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+                Debug.Log($"Deleted save: {fileName}");
+            }
         }
     }
 }
