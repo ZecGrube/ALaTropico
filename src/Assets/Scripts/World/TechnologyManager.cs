@@ -33,7 +33,12 @@ namespace CaudilloBay.World
 
         public void AddResearchPoints(float points)
         {
-            currentResearchPoints += points;
+            float multiplier = 1.0f;
+            if (Core.EducationManager.Instance != null)
+            {
+                multiplier = 1.0f + (Core.EducationManager.Instance.globalEducationLevel / 100f);
+            }
+            currentResearchPoints += points * multiplier;
         }
 
         public bool CanResearch(Technology tech)

@@ -11,14 +11,60 @@ namespace CaudilloBay.World
         private float currentCycleTimer = 0f;
 
         public float ProductionRate => productionRate;
-        public bool CanProduce => IsConstructed && HasInputResources();
+        public bool CanProduce => IsFunctional() && HasInputResources();
 
         private void Update()
         {
-            if (IsConstructed && !HasInputResources())
+            if (IsFunctional())
             {
-                RequestInputs();
+                if (!HasInputResources())
+                {
+                    RequestInputs();
+                }
+
+                if (IsOutputStockHigh())
+                {
+                    RequestOutputPickup();
+                }
             }
+        }
+
+        private bool IsOutputStockHigh()
+        {
+            foreach (var output in data.production)
+            {
+                if (inventory.GetAmount(output.resourceType) >= output.amount * 5f) return true;
+            }
+            return false;
+        }
+
+        private void RequestOutputPickup()
+        {
+            if (Economy.LogisticsManager.Instance == null) return;
+
+            foreach (var output in data.production)
+            {
+                if (inventory.GetAmount(output.resourceType) > 0)
+                {
+                    Building storage = FindStorageForResource(output.resourceType);
+                    if (storage != null)
+                    {
+                        Economy.LogisticsManager.Instance.CreateOrder(this, storage, output.resourceType, inventory.GetAmount(output.resourceType));
+                    }
+                }
+            }
+        }
+
+        private Building FindStorageForResource(ResourceType type)
+        {
+            foreach (var b in StatsManager.Instance.GetTrackedBuildings())
+            {
+                if (b is StorageBuilding && b.inventory.GetTotalWeight() < b.data.storageCapacity)
+                {
+                    return b;
+                }
+            }
+            return null;
         }
 
         private void RequestInputs()
@@ -56,7 +102,33 @@ namespace CaudilloBay.World
         {
             if (!CanProduce) return;
             ConsumeInputs();
-            ProduceOutputs();
+            ProduceOutputsWithEducation();
+        }
+
+        private void ProduceOutputsWithEducation()
+        {
+            float healthMultiplier = 1.0f;
+            if (Core.HealthManager.Instance != null)
+            {
+                healthMultiplier = 0.5f + (Core.HealthManager.Instance.globalHealthLevel / 200f);
+            }
+
+            float educationMultiplier = 1.0f;
+            if (Core.EducationManager.Instance != null)
+            {
+                educationMultiplier = 1.0f + (Core.EducationManager.Instance.globalEducationLevel / 200f);
+            }
+
+            float modifierMultiplier = 1.0f;
+            if (Core.ModifierManager.Instance != null)
+            {
+                modifierMultiplier += Core.ModifierManager.Instance.GetTotalModifier(Data.ModifierType.ProductionEfficiency);
+            }
+
+            foreach (var output in data.production)
+            {
+                inventory.AddResource(output.resourceType, output.amount * healthMultiplier * educationMultiplier * modifierMultiplier);
+            }
         }
 
         private bool HasInputResources()

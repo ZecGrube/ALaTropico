@@ -62,7 +62,9 @@ namespace CaudilloBay.Core
             // Factor for criminogenic buildings (casinos etc)
             float criminogenicFactor = CalculateCriminogenicFactor();
 
-            globalCrimeRate = Mathf.Clamp(unemploymentFactor + povertyFactor + criminogenicFactor - policeEffectiveness, 0f, 100f);
+            float educationFactor = EducationManager.Instance != null ? EducationManager.Instance.globalEducationLevel * 0.2f : 0f;
+
+            globalCrimeRate = Mathf.Clamp(unemploymentFactor + povertyFactor + criminogenicFactor - policeEffectiveness - educationFactor, 0f, 100f);
 
             Debug.Log($"Monthly Crime Rate: {globalCrimeRate} (Unemp: {unemploymentFactor}, Poverty: {povertyFactor}, Police: {policeEffectiveness})");
         }

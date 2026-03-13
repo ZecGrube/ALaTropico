@@ -38,8 +38,7 @@ namespace CaudilloBay.UI
 
         public void LoadSave(string fileName)
         {
-            saveSystem.LoadGame(fileName);
-            GameStateManager.Instance.StartNewGame();
+            GameStateManager.Instance.LoadExistingGame(fileName);
         }
 
         public void DeleteSave(string fileName)
