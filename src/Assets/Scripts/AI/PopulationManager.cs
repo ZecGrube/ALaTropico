@@ -81,7 +81,17 @@ namespace CaudilloBay.AI
         public void Emigrate(Citizen citizen)
         {
             Debug.Log($"Citizen {citizen.id} is emigrating due to low satisfaction!");
+            RemoveCitizen(citizen);
+        }
 
+        public void Die(Citizen citizen)
+        {
+            Debug.Log($"Citizen {citizen.id} has died!");
+            RemoveCitizen(citizen);
+        }
+
+        private void RemoveCitizen(Citizen citizen)
+        {
             if (citizen.home != null)
                 citizen.home.residents.Remove(citizen);
 

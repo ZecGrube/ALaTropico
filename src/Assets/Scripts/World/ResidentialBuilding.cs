@@ -41,6 +41,12 @@ namespace CaudilloBay.World
                 targetHappiness -= localCrime * 0.5f;
             }
 
+            // Influence of health
+            if (CaudilloBay.Core.HealthManager.Instance != null)
+            {
+                targetHappiness += (CaudilloBay.Core.HealthManager.Instance.globalHealthLevel - 50f);
+            }
+
             currentHappiness = Mathf.MoveTowards(currentHappiness, Mathf.Clamp(targetHappiness, 0, 100), 5f);
 
             return currentHappiness;

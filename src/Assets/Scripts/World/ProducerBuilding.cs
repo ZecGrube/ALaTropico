@@ -11,11 +11,11 @@ namespace CaudilloBay.World
         private float currentCycleTimer = 0f;
 
         public float ProductionRate => productionRate;
-        public bool CanProduce => IsConstructed && HasInputResources();
+        public bool CanProduce => IsFunctional() && HasInputResources();
 
         private void Update()
         {
-            if (IsConstructed)
+            if (IsFunctional())
             {
                 if (!HasInputResources())
                 {
@@ -107,6 +107,12 @@ namespace CaudilloBay.World
 
         private void ProduceOutputsWithEducation()
         {
+            float healthMultiplier = 1.0f;
+            if (Core.HealthManager.Instance != null)
+            {
+                healthMultiplier = 0.5f + (Core.HealthManager.Instance.globalHealthLevel / 200f);
+            }
+
             float educationMultiplier = 1.0f;
             if (Core.EducationManager.Instance != null)
             {
@@ -121,7 +127,7 @@ namespace CaudilloBay.World
 
             foreach (var output in data.production)
             {
-                inventory.AddResource(output.resourceType, output.amount * educationMultiplier * modifierMultiplier);
+                inventory.AddResource(output.resourceType, output.amount * healthMultiplier * educationMultiplier * modifierMultiplier);
             }
         }
 

@@ -67,6 +67,9 @@ namespace CaudilloBay.Politics
             if (Core.EducationManager.Instance != null)
                 Core.EducationManager.Instance.ProcessMonthlyEducation();
 
+            if (Core.HealthManager.Instance != null)
+                Core.HealthManager.Instance.ProcessMonthlyHealth();
+
             CheckRandomEvents();
 
             if (CoupManager.Instance != null)

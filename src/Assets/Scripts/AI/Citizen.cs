@@ -16,6 +16,7 @@ namespace CaudilloBay.AI
         public float satisfaction = 50f;
         public float fearOfCrime = 0f;
         public float educationLevel = 0f;
+        public float health = 100f;
 
         [Header("Associations")]
         public ResidentialBuilding home;
@@ -140,6 +141,24 @@ namespace CaudilloBay.AI
                 home.inventory.RemoveResource(home.foodType, 1.0f);
                 hunger = 0f;
                 satisfaction = Mathf.Min(satisfaction + 10f, 100f);
+                health = Mathf.Min(health + 5f, 100f);
+            }
+        }
+
+        public void UpdateHealth(float delta)
+        {
+            health = Mathf.Clamp(health + delta, 0, 100);
+            if (health <= 0)
+            {
+                Die();
+            }
+        }
+
+        private void Die()
+        {
+            if (PopulationManager.Instance != null)
+            {
+                PopulationManager.Instance.Die(this);
             }
         }
     }

@@ -50,27 +50,49 @@ namespace CaudilloBay.Core
         {
             currentMode = GameMode.Sandbox;
             sandboxSettings = settings;
-            StartCoroutine(LoadAndSetupGame());
+            StartCoroutine(LoadAndSetupGame(true));
         }
 
-        private IEnumerator LoadAndSetupGame()
+        public void StartNewGame()
+        {
+            // Default sandbox start
+            StartSandboxGame(new SandboxSettings());
+        }
+
+        public void LoadExistingGame(string saveFile)
+        {
+            StartCoroutine(LoadAndSetupGame(false, saveFile));
+        }
+
+        private IEnumerator LoadAndSetupGame(bool generateNewIsland, string saveFile = "")
         {
             yield return StartCoroutine(LoadSceneCoroutine(gameScene));
 
-            // Setup Island
-            World.IslandGenerator generator = UnityEngine.Object.FindAnyObjectByType<World.IslandGenerator>();
-            if (generator != null)
+            if (generateNewIsland)
             {
-                if (currentMode == GameMode.Campaign) generator.SetupFromMission(activeMission);
-                else generator.SetupFromSandbox(sandboxSettings);
+                // Setup Island
+                World.IslandGenerator generator = UnityEngine.Object.FindAnyObjectByType<World.IslandGenerator>();
+                if (generator != null)
+                {
+                    if (currentMode == GameMode.Campaign) generator.SetupFromMission(activeMission);
+                    else generator.SetupFromSandbox(sandboxSettings);
 
-                generator.GenerateIsland();
+                    generator.GenerateIsland();
+                }
+
+                // Setup Mission Manager
+                if (currentMode == GameMode.Campaign && CampaignManager.Instance != null)
+                {
+                    CampaignManager.Instance.LoadMission(activeMission);
+                }
             }
-
-            // Setup Mission Manager
-            if (currentMode == GameMode.Campaign && CampaignManager.Instance != null)
+            else
             {
-                CampaignManager.Instance.LoadMission(activeMission);
+                // Load from save
+                if (SaveSystem.Instance != null)
+                {
+                    SaveSystem.Instance.LoadGame(saveFile);
+                }
             }
         }
 
