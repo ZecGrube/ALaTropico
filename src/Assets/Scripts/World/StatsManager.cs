@@ -14,22 +14,41 @@ namespace CaudilloBay.World
         public float globalPollution = 0f;
         public Dictionary<string, float> globalStockpiles = new Dictionary<string, float>();
 
+        private List<Building> _trackedBuildings = new List<Building>();
+
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
         }
 
+        public void RegisterBuilding(Building b)
+        {
+            if (!_trackedBuildings.Contains(b))
+            {
+                _trackedBuildings.Add(b);
+            }
+        }
+
+        public void UnregisterBuilding(Building b)
+        {
+            if (_trackedBuildings.Contains(b))
+            {
+                _trackedBuildings.Remove(b);
+            }
+        }
+
         public void RefreshStats()
         {
-            Building[] allBuildings = UnityEngine.Object.FindObjectsByType<Building>(FindObjectsSortMode.None);
             globalStockpiles.Clear();
             float happinessSum = 0;
             float pollutionSum = 0;
             int residentialCount = 0;
 
-            foreach (var b in allBuildings)
+            foreach (var b in _trackedBuildings)
             {
+                if (b == null) continue;
+
                 pollutionSum += b.pollutionOutput;
 
                 if (b is ResidentialBuilding rb)

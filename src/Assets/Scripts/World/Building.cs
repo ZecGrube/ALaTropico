@@ -30,6 +30,18 @@ namespace CaudilloBay.World
         [Header("Ecology")]
         public float pollutionOutput = 0f;
 
+        protected virtual void OnEnable()
+        {
+            if (StatsManager.Instance != null)
+                StatsManager.Instance.RegisterBuilding(this);
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (StatsManager.Instance != null)
+                StatsManager.Instance.UnregisterBuilding(this);
+        }
+
         // IPlaceable implementation
         public string Id => buildingId;
         public (int width, int height) Footprint => (footprint.x, footprint.y);

@@ -44,21 +44,44 @@ namespace CaudilloBay.AI
                     if (task != null)
                     {
                         currentTarget = task.Value.targetBuilding;
-                        DetermineNextStep();
+                        if (currentTarget != null)
+                        {
+                            DetermineNextStep();
+                        }
                     }
                     break;
 
                 case BuilderState.MovingToStorage:
-                    if (nearestStorage == null) break;
+                    if (nearestStorage == null)
+                    {
+                        currentState = BuilderState.Idle;
+                        break;
+                    }
+
                     if (Vector3.Distance(transform.position, nearestStorage.transform.position) <= buildRange)
                     {
                         CollectResourcesFromStorage();
-                        currentState = BuilderState.MovingToBuild;
-                        agent.SetDestination(currentTarget.transform.position);
+
+                        if (currentTarget != null)
+                        {
+                            currentState = BuilderState.MovingToBuild;
+                            agent.SetDestination(currentTarget.transform.position);
+                        }
+                        else
+                        {
+                            currentState = BuilderState.Idle;
+                        }
                     }
                     break;
 
                 case BuilderState.MovingToBuild:
+                    if (currentTarget == null)
+                    {
+                        currentState = BuilderState.Idle;
+                        agent.ResetPath();
+                        break;
+                    }
+
                     if (Vector3.Distance(transform.position, currentTarget.transform.position) <= buildRange)
                     {
                         currentState = BuilderState.Building;
@@ -67,7 +90,7 @@ namespace CaudilloBay.AI
                     break;
 
                 case BuilderState.Building:
-                    if (currentTarget.IsConstructed)
+                    if (currentTarget == null || currentTarget.IsConstructed)
                     {
                         currentState = BuilderState.Idle;
                         currentTarget = null;
@@ -82,6 +105,12 @@ namespace CaudilloBay.AI
 
         private void DetermineNextStep()
         {
+            if (currentTarget == null)
+            {
+                currentState = BuilderState.Idle;
+                return;
+            }
+
             // Simplified: for now assume we always need to check storage or go straight if already built
             if (nearestStorage != null && !HasRequiredResources())
             {
@@ -122,6 +151,8 @@ namespace CaudilloBay.AI
 
         public void SetTargetConstruction(Transform target)
         {
+            if (target == null) return;
+
             Building b = target.GetComponent<Building>();
             if (b != null)
             {

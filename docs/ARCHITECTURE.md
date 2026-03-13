@@ -1,9 +1,18 @@
-# Caudillo Bay - Game Architecture (ECS)
+# Caudillo Bay - Game Architecture (Hybrid Approach)
 
 ## 1. Overview
-Caudillo Bay uses Unity's **Entity Component System (ECS)** to simulate thousands of citizens (agents), vehicles, and complex economic systems with high performance.
+Caudillo Bay utilizes a hybrid architecture designed for both rapid iteration and high performance.
 
-## 2. Component Design
+### Prototype Phase (Current)
+The current foundational layer is implemented using **MonoBehaviours** for ease of development, debugging, and integration with high-level Unity systems like NavMesh and UI. This allows for quick prototyping of game mechanics such as the Political System and Economy.
+
+### Scalability Strategy (Target)
+As the simulation grows to handle thousands of individual agents (builders, tourists, cars), performance-critical logic is slated for migration to **Unity ECS (Entity Component System)** and **DOTS**.
+
+- **Logic Separation:** Managers and data-heavy systems (e.g., `ProductionSystem`, `StatsManager`) are designed to be easily transitioned to ECS Systems.
+- **Data Driven:** The use of ScriptableObjects and serializable data structures facilitates the eventual move to pure Component data.
+
+## 2. System Design (Transitioning to Components)
 Data is separated from logic. Key components include:
 
 ### 2.1 Citizen Components
