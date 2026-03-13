@@ -18,6 +18,15 @@ namespace CaudilloBay.Construction
             {
                 PlaceBuilding();
             }
+
+            if (CaudilloBay.Core.InputManager.Instance != null)
+            {
+                if (CaudilloBay.Core.InputManager.Instance.GetActionDown(CaudilloBay.Core.GameAction.OpenBuildMenu))
+                {
+                    // Toggle Build Menu UI
+                    Debug.Log("Build Menu Hotkey Pressed");
+                }
+            }
         }
 
         private void PlaceBuilding()

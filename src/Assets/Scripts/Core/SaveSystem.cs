@@ -80,6 +80,8 @@ namespace CaudilloBay.Core
             public List<RelationSaveData> relations = new List<RelationSaveData>();
             public List<ObjectiveSaveData> missionObjectives = new List<ObjectiveSaveData>();
             public List<BuildingSaveData> buildings = new List<BuildingSaveData>();
+            public List<string> completedTutorialSteps = new List<string>();
+            public List<string> unlockedAchievements = new List<string>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -145,6 +147,16 @@ namespace CaudilloBay.Core
             if (FactionManager.Instance != null)
             {
                 data.relations = FactionManager.Instance.GetRelationSaveData();
+            }
+
+            if (UI.TutorialManager.Instance != null)
+            {
+                foreach (var step in UI.TutorialManager.Instance.completedSteps) data.completedTutorialSteps.Add(step);
+            }
+
+            if (AchievementManager.Instance != null)
+            {
+                foreach (var ach in AchievementManager.Instance.unlockedAchievements) data.unlockedAchievements.Add(ach);
             }
 
             if (StatsManager.Instance != null)
@@ -234,6 +246,37 @@ namespace CaudilloBay.Core
             if (FactionManager.Instance != null)
             {
                 FactionManager.Instance.LoadRelationSaveData(data.relations);
+            }
+
+            if (UI.TutorialManager.Instance != null)
+            {
+                UI.TutorialManager.Instance.completedSteps.Clear();
+                foreach (var step in data.completedTutorialSteps) UI.TutorialManager.Instance.completedSteps.Add(step);
+            }
+
+            if (AchievementManager.Instance != null)
+            {
+                AchievementManager.Instance.unlockedAchievements.Clear();
+                foreach (var ach in data.unlockedAchievements) AchievementManager.Instance.unlockedAchievements.Add(ach);
+            }
+
+            // Restore buildings
+            foreach (var bs in data.buildings)
+            {
+                BuildingData bData = Resources.Load<BuildingData>($"Buildings/{bs.buildingId}");
+                if (bData != null)
+                {
+                    Vector3 pos = new Vector3(bs.posX, 0, bs.posZ);
+                    GameObject go = Instantiate(bData.prefab, pos, Quaternion.identity);
+                    Building b = go.GetComponent<Building>();
+                    b.data = bData;
+                    b.GridPosition = (bs.posX, bs.posZ);
+                    foreach (var invData in bs.inventory)
+                    {
+                        ResourceType rType = Resources.Load<ResourceType>($"Resources/{invData.resourceId}");
+                        if (rType != null) b.inventory.AddResource(rType, invData.amount);
+                    }
+                }
             }
 
             Debug.Log("Game loaded successfully.");

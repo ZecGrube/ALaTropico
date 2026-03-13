@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 using UnityEngine.UI;
+using CaudilloBay.Core;
 
 namespace CaudilloBay.UI
 {
@@ -21,10 +22,18 @@ namespace CaudilloBay.UI
             tooltipBox.SetActive(false);
         }
 
-        public void Show(string content, string header = "")
+        public void Show(string contentKey, string headerKey = "")
         {
-            headerText.text = header;
-            contentText.text = content;
+            if (LocalizationManager.Instance != null)
+            {
+                headerText.text = LocalizationManager.Instance.GetText(headerKey);
+                contentText.text = LocalizationManager.Instance.GetText(contentKey);
+            }
+            else
+            {
+                headerText.text = headerKey;
+                contentText.text = contentKey;
+            }
             tooltipBox.SetActive(true);
         }
 

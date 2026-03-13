@@ -1,0 +1,10 @@
+{
+  "items": [
+    { "key": "ui_new_game", "value": "New Game" },
+    { "key": "ui_load", "value": "Load Game" },
+    { "key": "ui_options", "value": "Options" },
+    { "key": "ui_exit", "value": "Exit" },
+    { "key": "tut_welcome_title", "value": "Welcome, El Presidente!" },
+    { "key": "tut_welcome_desc", "value": "Build your paradise and rule with wisdom... or an iron fist." }
+  ]
+}

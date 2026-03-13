@@ -19,6 +19,11 @@ namespace CaudilloBay.UI
 
         private void Update()
         {
+            if (Core.InputManager.Instance != null && Core.InputManager.Instance.GetActionDown(Core.GameAction.OpenPolitics))
+            {
+                TogglePanel();
+            }
+
             if (FactionManager.Instance != null)
             {
                 string status = "Factions Loyalty:\n";

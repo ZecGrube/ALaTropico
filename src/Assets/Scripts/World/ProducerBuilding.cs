@@ -29,10 +29,27 @@ namespace CaudilloBay.World
             {
                 if (inventory.GetAmount(input.resourceType) < input.amount)
                 {
-                    // Logic to find a storage and create order would go here
-                    // LogisticsManager.Instance.CreateOrder(source, this, input.resourceType, input.amount);
+                    // Find a source with the required resource
+                    Building source = FindSourceForResource(input.resourceType);
+                    if (source != null)
+                    {
+                        Economy.LogisticsManager.Instance.CreateOrder(source, this, input.resourceType, input.amount);
+                    }
                 }
             }
+        }
+
+        private Building FindSourceForResource(ResourceType type)
+        {
+            // Simple lookup: in a real project use a specialized manager or distance check
+            foreach (var b in StatsManager.Instance.GetTrackedBuildings())
+            {
+                if (b is StorageBuilding && b.inventory.HasResource(type, 1.0f))
+                {
+                    return b;
+                }
+            }
+            return null;
         }
 
         public void ProduceCycle()
