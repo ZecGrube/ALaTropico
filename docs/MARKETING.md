@@ -1,48 +1,73 @@
-# Caudillo Bay - Marketing & Steam Strategy
+# Caudillo Bay - Marketing & PR
 
-## 1. Titles & Slogans
-**Main Title:** Caudillo Bay
-**Alternative Titles:**
-- Banana Republic: El Presidente
-- Tropico Urbano
-- La Ciudad del Caudillo
+## 1. Official Trailer Script (60 Seconds)
 
-**Slogans:**
-- "Build Paradise, Rule with Iron."
-- "The Caribbean Dream... with a Presidential Twist."
-- "Stay in Power. At Any Cost."
+**0:00 - 0:05**: Aerial shot of a lush, empty tropical island. Caribbean salsa music starts (upbeat).
+*Narrator (Gruff, charismatic):* "They call it paradise. I call it... a project."
 
-## 2. Steam Page Draft
+**0:05 - 0:15**: Fast-cut montage of construction. Houses, then factories, then a massive statue of El Presidente.
+*Narrator:* "You start with nothing but a mandate and a mustache. You build, you grow, you prosper."
 
-### 2.1 Short Description
-Welcome to Caudillo Bay! As El Presidente, you must transform a lush Caribbean island into a global economic miracle—all while outsmarting the factions and superpowers who want you gone.
+**0:15 - 0:25**: Close-up on UI showing Faction Loyalty bars dropping. Protesters outside the palace.
+*Narrator:* "But the people are... demanding. The Capitalists want gold. The Communists want bread. And you? You just want to stay in office."
 
-### 2.2 About This Game
-Step into the polished boots of **El Presidente**, the charismatic leader of the newly independent island of **Caudillo Bay**. Your goal? Turn this tropical paradise into the envy of the world. Your reality? A balancing act of economic survival and political intrigue.
+**0:25 - 0:40**: Global Map view. Soviet subs and US planes moving. A spy mission success popup.
+*Narrator:* "The world is watching. Play the giants against each other, or get crushed under their boots."
 
-**Key Features:**
-- **City-Building & Industrial Might:** Construct over 80 unique buildings and manage 50+ resources. From humble banana plantations to high-tech aerospace facilities, your decisions shape the island's landscape and economy.
-- **The Political Chessboard:** Navigate the demands of five volatile factions. Will you satisfy the greedy Capitalists, or build a worker's paradise for the Communists? Every building you place and decree you sign will shift the political winds.
-- **Global Cold War:** Interact with the USA, USSR, and other superpowers on a strategic global map. Send your spies on missions, negotiate trade deals, or even start a secret nuclear program to ensure your survival.
-- **Elite Bodyguards:** Hire and train ten unique bodyguards with special abilities to protect you from coups and sabotage. Each has their own story and global missions to complete.
-- **Deep Simulation:** Powered by Unity ECS, witness thousands of citizens going about their daily lives—commuting to work, visiting casinos, and occasionally protesting your latest tax hike.
+**0:40 - 0:50**: Combat montage. Bodyguards defending the palace from a coup.
+*Narrator:* "Survive the night. Secure the vote. Rule forever."
 
-**Will you be a benevolent visionary or a ruthless dictator? The future of Caudillo Bay is in your hands!**
+**0:50 - 1:00**: Title Card: **CAUDILLO BAY**. "Coming Soon to Steam."
 
-## 3. Key Search Tags
-- City Builder
-- Political Sim
-- Resource Management
-- Sandbox
-- Strategy
-- Historical (1950s-1980s)
-- Satire
-- Singleplayer
+---
 
-## 4. Visual Assets Ideas
-- **Main Capsule:** El Presidente standing on a balcony overlooking a bright, neon-lit city with palm trees and a gold statue of themselves in the background.
-- **Screenshots:**
-  - A bustling port with sugar-cane trucks and rum ships.
-  - A close-up of a political riot being contained by a specialized bodyguard.
-  - The Global Map with USA/USSR influence meters.
-  - A beautiful sunset over a luxury hotel district.
+## 2. Press Release (Draft)
+
+**FOR IMMEDIATE RELEASE**
+
+**Build Your Paradise, Manage the Chaos: Caudillo Bay Announced!**
+
+**Tropico Urbano Studios** is proud to announce *Caudillo Bay*, a satirical political city-builder that puts players in the polished boots of "El Presidente."
+
+Set on a vibrant Caribbean island during the height of a fictional Cold War, *Caudillo Bay* combines deep economic management with a cutthroat political simulation. Players must navigate the conflicting demands of internal factions while managing their standing on the global stage.
+
+"We wanted to capture the absurdity and the high stakes of being a tropical dictator," says the Lead Designer. "It's not just about where you put the roads; it's about whose cousin owns the paving company."
+
+**Key Features include:**
+- A detailed production-based economy.
+- A complex faction system where every decision has a political cost.
+- A Global Map for international intrigue and superpower diplomacy.
+- Unique Bodyguards with RPG-like progression and personal missions.
+
+*Caudillo Bay* is slated for release on PC in 202X.
+
+**Media Contact:**
+press@caudillobay.com
+www.caudillobay.com/press
+
+---
+
+## 3. Gold Master Announcement (Draft)
+
+**EL PRESIDENTE DECLARES: CAUDILLO BAY IS GOLD!**
+
+Citizens, rejoice! His Excellency El Presidente has officially signed off on the final master version of *Caudillo Bay*. After months of rigorous testing (and only a few minor deportations), the jewel of the Caribbean is ready for the world to see.
+
+"The economy is stable, the rebels are... 'on vacation', and the rum is flowing," announced the Ministry of Truth. "There has never been a better time to be a dictator."
+
+*Caudillo Bay* launches on Steam in 48 hours. Secure your mandate. Pre-order now to receive the exclusive 'Golden Mustache' cosmetic set for El Presidente.
+
+**Viva El Presidente!**
+
+---
+
+## 4. Official Launch Announcement
+
+**CAUDILLO BAY IS OUT NOW!**
+
+The wait is over, El Presidente. The docks are full, the palace is polished, and the people are... well, they're here.
+
+Take control of your island destiny today. Whether you rule with an iron fist or a velvet glove, the world is yours to command.
+
+**Community Update #1: The Road Ahead**
+We are already hard at work on the first post-launch patch to address resolution issues and add some requested quality-of-life features. Thank you for the incredible support during our first 24 hours!

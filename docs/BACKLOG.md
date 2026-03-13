@@ -69,11 +69,12 @@
 
 ## Characters & Agents
 
-### C1: Agent System (ECS)
-- **User Story:** As a developer, I want to simulate thousands of citizens (workers, tourists) efficiently using ECS.
+### C1: Agent System (Planned ECS Migration)
+- **User Story:** As a developer, I want to simulate thousands of citizens (workers, tourists) efficiently.
 - **Tasks:**
-  - [ ] Implement citizen pathfinding and job assignment.
-  - [ ] Create unique attributes for agents (loyalty, wealth, happiness).
+  - [x] Implement initial citizen pathfinding (NavMesh-based prototype).
+  - [x] Create unique attributes for agents (loyalty, wealth, happiness).
+  - [ ] Port agent simulation to Unity ECS for high-performance population scaling.
 
 ### C2: Bodyguards & Spies
 - **Tasks:**

@@ -1,0 +1,10 @@
+{
+  "items": [
+    { "key": "ui_new_game", "value": "Новая игра" },
+    { "key": "ui_load", "value": "Загрузить" },
+    { "key": "ui_options", "value": "Настройки" },
+    { "key": "ui_exit", "value": "Выход" },
+    { "key": "tut_welcome_title", "value": "Добро пожаловать, Эль Президенте!" },
+    { "key": "tut_welcome_desc", "value": "Постройте свой рай и правьте мудро... или железным кулаком." }
+  ]
+}

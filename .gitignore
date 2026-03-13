@@ -1,6 +1,5 @@
 # Unity .gitignore
 
-[Aa]ssets/
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -10,7 +9,6 @@
 [Uu]serSettings/
 MemoryCaptures/
 Recorder/
-!/[Aa]ssets/**/*.meta
 
 # OS-specific
 .DS_Store
