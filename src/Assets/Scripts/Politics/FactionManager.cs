@@ -55,6 +55,12 @@ namespace CaudilloBay.Politics
             CheckDemands();
             yield return null;
 
+            if (Core.EventManager.Instance != null)
+                Core.EventManager.Instance.CheckForEvents();
+
+            if (Core.ModifierManager.Instance != null)
+                Core.ModifierManager.Instance.ProcessMonthlyTick();
+
             CheckRandomEvents();
 
             if (CoupManager.Instance != null)

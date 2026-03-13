@@ -16,6 +16,8 @@ namespace CaudilloBay.World
         protected float currentProgress = 0f;
         protected bool isConstructed = false;
         public int currentWorkers = 0;
+        public float currentHealth = 100f;
+        public float maxHealth = 100f;
 
         [Header("Economy")]
         public Inventory inventory = new Inventory();
@@ -62,6 +64,22 @@ namespace CaudilloBay.World
                 CompleteConstruction();
             }
         }
+
+        public virtual void TakeDamage(float amount)
+        {
+            currentHealth -= amount;
+            if (currentHealth < 0) currentHealth = 0;
+            Debug.Log($"{displayName} took {amount} damage. Health: {currentHealth}");
+        }
+
+        public virtual void Repair(float amount)
+        {
+            currentHealth += amount;
+            if (currentHealth > maxHealth) currentHealth = maxHealth;
+            Debug.Log($"{displayName} repaired {amount}. Health: {currentHealth}");
+        }
+
+        public bool IsFunctional() => isConstructed && currentHealth > 0;
 
         public bool AreMaterialsProvided()
         {

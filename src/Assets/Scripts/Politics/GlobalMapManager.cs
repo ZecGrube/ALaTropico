@@ -12,6 +12,10 @@ namespace CaudilloBay.Politics
         public List<Bodyguard> bodyguards = new List<Bodyguard>();
         public List<ActiveMission> activeMissions = new List<ActiveMission>();
 
+        [Header("Diplomacy")]
+        public List<Data.Sanction> activeSanctions = new List<Data.Sanction>();
+        public List<SuperpowerType> alliedSuperpowers = new List<SuperpowerType>();
+
         private void Awake()
         {
             if (Instance == null) Instance = this;
@@ -36,6 +40,35 @@ namespace CaudilloBay.Politics
                     activeMissions.RemoveAt(i);
                 }
             }
+        }
+
+        public void StartAlliance(SuperpowerType superpower)
+        {
+            if (!alliedSuperpowers.Contains(superpower))
+            {
+                alliedSuperpowers.Add(superpower);
+                Debug.Log($"Alliance formed with {superpower}!");
+            }
+        }
+
+        public void BreakAlliance(SuperpowerType superpower)
+        {
+            if (alliedSuperpowers.Contains(superpower))
+            {
+                alliedSuperpowers.Remove(superpower);
+                Debug.Log($"Alliance broken with {superpower}!");
+            }
+        }
+
+        public void ApplySanction(Data.Sanction sanction)
+        {
+            activeSanctions.Add(sanction);
+            foreach (var effect in sanction.effects)
+            {
+                if (Core.ModifierManager.Instance != null)
+                    Core.ModifierManager.Instance.AddModifier(effect);
+            }
+            Debug.Log($"Sanction applied by {sanction.issuerName}: {sanction.reason}");
         }
 
         public void StartMission(GlobalMission template, Agent agent)

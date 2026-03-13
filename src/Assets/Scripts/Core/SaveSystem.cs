@@ -45,7 +45,15 @@ namespace CaudilloBay.Core
             public string buildingId;
             public int posX;
             public int posZ;
+            public float health;
             public List<InventorySaveData> inventory = new List<InventorySaveData>();
+        }
+
+        [System.Serializable]
+        public class ModifierSaveData
+        {
+            public Data.ModifierData data;
+            public int remainingMonths;
         }
 
         [System.Serializable]
@@ -82,6 +90,8 @@ namespace CaudilloBay.Core
             public List<BuildingSaveData> buildings = new List<BuildingSaveData>();
             public List<string> completedTutorialSteps = new List<string>();
             public List<string> unlockedAchievements = new List<string>();
+            public List<ModifierSaveData> activeModifiers = new List<ModifierSaveData>();
+            public List<Politics.SuperpowerType> alliances = new List<Politics.SuperpowerType>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -159,6 +169,19 @@ namespace CaudilloBay.Core
                 foreach (var ach in AchievementManager.Instance.unlockedAchievements) data.unlockedAchievements.Add(ach);
             }
 
+            if (ModifierManager.Instance != null)
+            {
+                foreach (var mod in ModifierManager.Instance.GetActiveModifiers())
+                {
+                    data.activeModifiers.Add(new ModifierSaveData { data = mod.data, remainingMonths = mod.remainingMonths });
+                }
+            }
+
+            if (GlobalMapManager.Instance != null)
+            {
+                data.alliances = new List<SuperpowerType>(GlobalMapManager.Instance.alliedSuperpowers);
+            }
+
             if (StatsManager.Instance != null)
             {
                 foreach (var b in StatsManager.Instance.GetTrackedBuildings())
@@ -166,7 +189,8 @@ namespace CaudilloBay.Core
                     BuildingSaveData bs = new BuildingSaveData {
                         buildingId = b.buildingId,
                         posX = b.GridPosition.x,
-                        posZ = b.GridPosition.z
+                        posZ = b.GridPosition.z,
+                        health = b.currentHealth
                     };
                     foreach (var resId in b.inventory.GetStoredResourceIds())
                     {
@@ -260,6 +284,21 @@ namespace CaudilloBay.Core
                 foreach (var ach in data.unlockedAchievements) AchievementManager.Instance.unlockedAchievements.Add(ach);
             }
 
+            if (ModifierManager.Instance != null)
+            {
+                List<ModifierManager.ActiveModifier> mods = new List<ModifierManager.ActiveModifier>();
+                foreach (var msd in data.activeModifiers)
+                {
+                    mods.Add(new ModifierManager.ActiveModifier { data = msd.data, remainingMonths = msd.remainingMonths });
+                }
+                ModifierManager.Instance.LoadModifiers(mods);
+            }
+
+            if (GlobalMapManager.Instance != null)
+            {
+                GlobalMapManager.Instance.alliedSuperpowers = new List<SuperpowerType>(data.alliances);
+            }
+
             // Restore buildings
             foreach (var bs in data.buildings)
             {
@@ -271,6 +310,7 @@ namespace CaudilloBay.Core
                     Building b = go.GetComponent<Building>();
                     b.data = bData;
                     b.GridPosition = (bs.posX, bs.posZ);
+                    b.currentHealth = bs.health;
                     foreach (var invData in bs.inventory)
                     {
                         ResourceType rType = Resources.Load<ResourceType>($"Resources/{invData.resourceId}");
