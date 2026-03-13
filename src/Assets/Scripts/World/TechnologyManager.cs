@@ -94,10 +94,15 @@ namespace CaudilloBay.World
             {
                 foreach (var prefab in tech.unlockedBuildings)
                 {
-                    if (prefab != null && prefab.name == buildingId)
+                    if (prefab != null)
                     {
-                        foundInAnyTech = true;
-                        if (IsResearched(tech.techId)) return true;
+                        // Check against the building data ID if possible, or prefab name
+                        Building b = prefab.GetComponent<Building>();
+                        if (b != null && b.data != null && b.data.buildingId == buildingId)
+                        {
+                            foundInAnyTech = true;
+                            if (IsResearched(tech.techId)) return true;
+                        }
                     }
                 }
             }

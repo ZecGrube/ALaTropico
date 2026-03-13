@@ -9,26 +9,24 @@ namespace CaudilloBay.World
 {
     public abstract class Building : MonoBehaviour, IPlaceable, IBuildable
     {
-        [Header("General Settings")]
-        public string buildingId;
-        public string displayName;
-        public Vector2Int footprint = new Vector2Int(1, 1);
+        [Header("Building Data")]
+        public BuildingData data;
 
-        [Header("Construction")]
-        public List<ResourceCost> buildCosts;
-        public float constructionTime = 10f;
-        private float currentProgress = 0f;
-        private bool isConstructed = false;
+        [Header("State")]
+        protected float currentProgress = 0f;
+        protected bool isConstructed = false;
+        public int currentWorkers = 0;
 
         [Header("Economy")]
         public Inventory inventory = new Inventory();
 
-        [Header("Politics")]
-        public List<FactionType> favoredFactions;
-        public List<FactionType> dislikedFactions;
-
-        [Header("Ecology")]
-        public float pollutionOutput = 0f;
+        // Convenience accessors
+        public string buildingId => data.buildingId;
+        public string displayName => data.buildingName;
+        public Vector2Int footprint => data.footprint;
+        public List<ResourceCost> buildCosts => data.buildCosts;
+        public float constructionTime => data.buildTime;
+        public float pollutionOutput => data.pollutionOutput;
 
         protected virtual void OnEnable()
         {
@@ -57,7 +55,6 @@ namespace CaudilloBay.World
         {
             if (isConstructed) return;
 
-            // Progress is only made if materials are provided (already checked by Builder AI usually)
             currentProgress += delta;
             if (currentProgress >= constructionTime)
             {
@@ -79,13 +76,11 @@ namespace CaudilloBay.World
         {
             isConstructed = true;
             Debug.Log($"{displayName} construction complete!");
-        }
-    }
 
-    [System.Serializable]
-    public struct ResourceCost
-    {
-        public ResourceType resourceType;
-        public float amount;
+            if (data.storageCapacity > 0)
+            {
+                inventory.maxWeight = data.storageCapacity;
+            }
+        }
     }
 }

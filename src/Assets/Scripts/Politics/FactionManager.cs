@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using CaudilloBay.World;
+using CaudilloBay.Data;
+using CaudilloBay.Economy;
 
 namespace CaudilloBay.Politics
 {
@@ -38,6 +40,12 @@ namespace CaudilloBay.Politics
         {
             // Spread expensive calculations over multiple frames
             StatsManager.Instance.RefreshStats();
+            yield return null;
+
+            if (EconomyManager.Instance != null)
+            {
+                EconomyManager.Instance.ProcessMonthlyEconomy(StatsManager.Instance.GetTrackedBuildings());
+            }
             yield return null;
 
             UpdateAllFactions();

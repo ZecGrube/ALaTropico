@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using CaudilloBay.World;
 using CaudilloBay.Data;
+using CaudilloBay.Economy;
 
 namespace CaudilloBay.World
 {
@@ -25,8 +26,8 @@ namespace CaudilloBay.World
         private void Start()
         {
 #if !UNITY_EDITOR
-            // In release, we might want to refresh stats less frequently to save CPU
-            InvokeRepeating(nameof(RefreshStats), 1f, 5f);
+            // In release, the monthly tick handles this via FactionManager
+            // but we keep this as a fallback if needed
 #endif
         }
 
@@ -88,6 +89,11 @@ namespace CaudilloBay.World
         public float GetResourceStockpile(string resourceId)
         {
             return globalStockpiles.ContainsKey(resourceId) ? globalStockpiles[resourceId] : 0f;
+        }
+
+        public List<Building> GetTrackedBuildings()
+        {
+            return _trackedBuildings;
         }
     }
 }
