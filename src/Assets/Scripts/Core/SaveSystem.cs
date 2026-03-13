@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using CaudilloBay.World;
 using CaudilloBay.Politics;
+using CaudilloBay.Data;
 
 namespace CaudilloBay.Core
 {
@@ -32,6 +33,22 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class InventorySaveData
+        {
+            public string resourceId;
+            public float amount;
+        }
+
+        [System.Serializable]
+        public class BuildingSaveData
+        {
+            public string buildingId;
+            public int posX;
+            public int posZ;
+            public List<InventorySaveData> inventory = new List<InventorySaveData>();
+        }
+
+        [System.Serializable]
         public class SaveMetadata
         {
             public string fileName;
@@ -40,8 +57,19 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class ObjectiveSaveData
+        {
+            public string description;
+            public float currentValue;
+            public bool isComplete;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
+            public GameMode mode;
+            public string missionId;
+            public SandboxSettings sandboxSettings;
             public float legitimacy;
             public int mandate;
             public float pollution;
@@ -50,11 +78,33 @@ namespace CaudilloBay.Core
             public List<string> researchedTechs = new List<string>();
             public List<BodyguardSaveData> bodyguards = new List<BodyguardSaveData>();
             public List<RelationSaveData> relations = new List<RelationSaveData>();
+            public List<ObjectiveSaveData> missionObjectives = new List<ObjectiveSaveData>();
+            public List<BuildingSaveData> buildings = new List<BuildingSaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
         {
             GameSaveData data = new GameSaveData();
+
+            if (GameStateManager.Instance != null)
+            {
+                data.mode = GameStateManager.Instance.currentMode;
+                data.sandboxSettings = GameStateManager.Instance.sandboxSettings;
+                if (GameStateManager.Instance.activeMission != null)
+                    data.missionId = GameStateManager.Instance.activeMission.missionId;
+            }
+
+            if (CampaignManager.Instance != null && data.mode == GameMode.Campaign)
+            {
+                foreach (var obj in CampaignManager.Instance.activeObjectives)
+                {
+                    data.missionObjectives.Add(new ObjectiveSaveData {
+                        description = obj.data.description,
+                        currentValue = obj.currentValue,
+                        isComplete = obj.isComplete
+                    });
+                }
+            }
 
             // Populate data from managers
             if (LegitimacySystem.Instance != null)
@@ -97,17 +147,31 @@ namespace CaudilloBay.Core
                 data.relations = FactionManager.Instance.GetRelationSaveData();
             }
 
+            if (StatsManager.Instance != null)
+            {
+                foreach (var b in StatsManager.Instance.GetTrackedBuildings())
+                {
+                    BuildingSaveData bs = new BuildingSaveData {
+                        buildingId = b.buildingId,
+                        posX = b.GridPosition.x,
+                        posZ = b.GridPosition.z
+                    };
+                    foreach (var resId in b.inventory.GetStoredResourceIds())
+                    {
+                        bs.inventory.Add(new InventorySaveData { resourceId = resId, amount = b.inventory.GetAmountById(resId) });
+                    }
+                    data.buildings.Add(bs);
+                }
+            }
+
             string json = JsonUtility.ToJson(data, true);
             string path = Path.Combine(Application.persistentDataPath, fileName);
             File.WriteAllText(path, json);
 
             Debug.Log($"Game saved to {path}");
 
-            // Post-release: Integrate with Steam Cloud
             if (SteamManager.Instance != null)
-            {
                 SteamManager.Instance.TriggerCloudSave(fileName);
-            }
         }
 
         public void LoadGame(string fileName = "savegame.json")
@@ -121,6 +185,13 @@ namespace CaudilloBay.Core
 
             string json = File.ReadAllText(path);
             GameSaveData data = JsonUtility.FromJson<GameSaveData>(json);
+
+            if (GameStateManager.Instance != null)
+            {
+                GameStateManager.Instance.currentMode = data.mode;
+                GameStateManager.Instance.sandboxSettings = data.sandboxSettings;
+                // Loading mission asset by ID would happen here via Resources.Load
+            }
 
             // Apply data to managers
             if (LegitimacySystem.Instance != null)
@@ -172,6 +243,8 @@ namespace CaudilloBay.Core
         {
             List<SaveMetadata> results = new List<SaveMetadata>();
             string path = Application.persistentDataPath;
+            if (!Directory.Exists(path)) return results;
+
             string[] files = Directory.GetFiles(path, "*.json");
 
             foreach (string file in files)
@@ -180,7 +253,7 @@ namespace CaudilloBay.Core
                 results.Add(new SaveMetadata
                 {
                     fileName = info.Name,
-                    islandName = "Island Paradise", // Placeholder: would be in file
+                    islandName = "Island Paradise",
                     date = info.LastWriteTime.ToString("yyyy-MM-dd HH:mm")
                 });
             }

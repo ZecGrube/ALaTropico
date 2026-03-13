@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using CaudilloBay.Data;
 
 namespace CaudilloBay.World
 {
@@ -19,11 +20,25 @@ namespace CaudilloBay.World
 
         private Transform islandParent;
 
+        public void SetupFromSandbox(SandboxSettings settings)
+        {
+            width = settings.GetWidth();
+            height = settings.GetHeight();
+            // Scale and thresholds could also be influenced by richness/difficulty
+        }
+
+        public void SetupFromMission(CampaignMission mission)
+        {
+            width = mission.mapWidth;
+            height = mission.mapHeight;
+            scale = mission.mapScale;
+        }
+
         public void GenerateIsland()
         {
             if (islandParent != null)
             {
-                DestroyImmediate(islandParent.gameObject);
+                Destroy(islandParent.gameObject);
             }
 
             islandParent = new GameObject("Island").transform;
@@ -54,7 +69,8 @@ namespace CaudilloBay.World
 
         private void Start()
         {
-            GenerateIsland();
+            // Usually triggered by GameStateManager now, but keep as fallback
+            if (islandParent == null) GenerateIsland();
         }
     }
 }

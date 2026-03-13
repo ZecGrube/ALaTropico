@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using CaudilloBay.Data;
 
 namespace CaudilloBay.Core
 {
@@ -14,6 +15,11 @@ namespace CaudilloBay.Core
 
         [Header("UI References")]
         public GameObject loadingOverlay;
+
+        [Header("Active Game State")]
+        public GameMode currentMode = GameMode.Sandbox;
+        public CampaignMission activeMission;
+        public SandboxSettings sandboxSettings;
 
         private void Awake()
         {
@@ -33,10 +39,39 @@ namespace CaudilloBay.Core
             StartCoroutine(LoadSceneCoroutine(mainMenuScene));
         }
 
-        public void StartNewGame()
+        public void StartCampaignMission(CampaignMission mission)
         {
-            // Reset game managers here if needed
-            StartCoroutine(LoadSceneCoroutine(gameScene));
+            currentMode = GameMode.Campaign;
+            activeMission = mission;
+            StartCoroutine(LoadAndSetupGame());
+        }
+
+        public void StartSandboxGame(SandboxSettings settings)
+        {
+            currentMode = GameMode.Sandbox;
+            sandboxSettings = settings;
+            StartCoroutine(LoadAndSetupGame());
+        }
+
+        private IEnumerator LoadAndSetupGame()
+        {
+            yield return StartCoroutine(LoadSceneCoroutine(gameScene));
+
+            // Setup Island
+            World.IslandGenerator generator = UnityEngine.Object.FindAnyObjectByType<World.IslandGenerator>();
+            if (generator != null)
+            {
+                if (currentMode == GameMode.Campaign) generator.SetupFromMission(activeMission);
+                else generator.SetupFromSandbox(sandboxSettings);
+
+                generator.GenerateIsland();
+            }
+
+            // Setup Mission Manager
+            if (currentMode == GameMode.Campaign && CampaignManager.Instance != null)
+            {
+                CampaignManager.Instance.LoadMission(activeMission);
+            }
         }
 
         public void QuitGame()
@@ -54,7 +89,6 @@ namespace CaudilloBay.Core
 
             while (!op.isDone)
             {
-                // Update progress bar here if one exists
                 yield return null;
             }
 

@@ -60,6 +60,9 @@ namespace CaudilloBay.Politics
             if (CoupManager.Instance != null)
                 CoupManager.Instance.CheckCoupConditions();
 
+            if (Core.CampaignManager.Instance != null)
+                Core.CampaignManager.Instance.CheckObjectives();
+
             Debug.Log($"Monthly Political Update Complete: Mandate {currentMandate}");
         }
 

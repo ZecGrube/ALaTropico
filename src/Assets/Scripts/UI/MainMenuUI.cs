@@ -10,10 +10,11 @@ namespace CaudilloBay.UI
         public GameObject mainMenuPanel;
         public GameObject optionsPanel;
         public GameObject loadPanel;
+        public GameObject modeSelectionPanel;
 
         public void OnNewGameClicked()
         {
-            GameStateManager.Instance.StartNewGame();
+            ShowPanel(modeSelectionPanel);
         }
 
         public void OnLoadClicked()
@@ -41,6 +42,7 @@ namespace CaudilloBay.UI
             mainMenuPanel.SetActive(false);
             optionsPanel.SetActive(false);
             loadPanel.SetActive(false);
+            if (modeSelectionPanel != null) modeSelectionPanel.SetActive(false);
 
             panelToShow.SetActive(true);
         }
