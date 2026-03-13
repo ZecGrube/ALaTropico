@@ -11,7 +11,7 @@ namespace CaudilloBay.World
             base.CompleteConstruction();
             if (CaudilloBay.Politics.MilitaryManager.Instance != null)
             {
-                CaudilloBay.Politics.MilitaryManager.Instance.AddBarracksStrength(strengthContribution);
+                CaudilloBay.Politics.MilitaryManager.Instance.AddArmyStrength(strengthContribution);
             }
         }
 
@@ -19,7 +19,7 @@ namespace CaudilloBay.World
         {
             if (CaudilloBay.Politics.MilitaryManager.Instance != null)
             {
-                CaudilloBay.Politics.MilitaryManager.Instance.RemoveBarracksStrength(strengthContribution);
+                CaudilloBay.Politics.MilitaryManager.Instance.RemoveArmyStrength(strengthContribution);
             }
         }
     }

@@ -127,6 +127,23 @@ namespace CaudilloBay.Politics
             }
         }
 
+        public float RequestMilitaryAid(SuperpowerType againstInvader)
+        {
+            if (MilitaryManager.Instance == null || alliedSuperpowers.Count == 0) return 0f;
+
+            float support = 0f;
+            foreach (var ally in alliedSuperpowers)
+            {
+                if (ally != againstInvader)
+                {
+                    support += 20f;
+                }
+            }
+
+            MilitaryManager.Instance.AddForeignSupport(support);
+            return support;
+        }
+
         private void InitializeBodyguards()
         {
             AddBodyguard("El Charro Negro", 30, 80, 50, 10);
@@ -161,6 +178,51 @@ namespace CaudilloBay.Politics
                 });
             }
             return list;
+        }
+
+        public bool OfferDynasticMarriage(SuperpowerType superpowerType)
+        {
+            Superpower superpower = superpowers.Find(s => s.type == superpowerType);
+            if (superpower == null || DynastyManager.Instance == null) return false;
+
+            superpower.relations += 12f;
+
+            Heir diplomaticHeir = new Heir
+            {
+                heirName = $"Diplomatic Heir ({superpowerType})",
+                age = UnityEngine.Random.Range(18, 30),
+                gender = (HeirGender)UnityEngine.Random.Range(0, 3),
+                isAlive = true,
+                loyaltyToRuler = 65f
+            };
+            diplomaticHeir.GenerateRandomStats();
+            diplomaticHeir.intelligence = Mathf.Clamp(diplomaticHeir.intelligence + 10f, 0f, 100f);
+            DynastyManager.Instance.AddHeir(diplomaticHeir);
+
+            Debug.Log($"Dynastic marriage signed with {superpowerType}. Relations improved.");
+            return true;
+        }
+
+        public bool StartSmugglingMission(Agent agent, string resourceId, float amount)
+        {
+            if (agent == null || agent.isOnMission) return false;
+            if (agent.stealth < 60f)
+            {
+                Debug.Log("Smuggling mission failed to start: stealth is too low.");
+                return false;
+            }
+
+            float payout = Mathf.Max(0f, amount) * 14f;
+            if (CorruptionManager.Instance != null)
+            {
+                CorruptionManager.Instance.AddBlackMarketMoney(payout);
+                CorruptionManager.Instance.corruptionLevel = Mathf.Clamp(CorruptionManager.Instance.corruptionLevel + 1.5f, 0f, 100f);
+            }
+
+            agent.isOnMission = true;
+            Debug.Log($"Smuggling mission complete: {resourceId} x{amount} => black market ${payout}");
+            agent.isOnMission = false;
+            return true;
         }
 
         public void LoadBodyguardData(List<BodyguardSaveData> data)

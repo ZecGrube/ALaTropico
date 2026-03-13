@@ -39,7 +39,31 @@ namespace CaudilloBay.UI
                 healthInfo = $" | HP: {CaudilloBay.Core.HealthManager.Instance.globalHealthLevel:F1}%";
             }
 
-            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}{educationInfo}{healthInfo}";
+            string militaryInfo = "";
+            if (CaudilloBay.Politics.MilitaryManager.Instance != null)
+            {
+                militaryInfo = $" | Army: {CaudilloBay.Politics.MilitaryManager.Instance.CalculateDefensePower():F0}";
+            }
+
+            string cultureInfo = "";
+            if (CaudilloBay.Politics.CultureManager.Instance != null)
+            {
+                cultureInfo = $" | Culture: {CaudilloBay.Politics.CultureManager.Instance.cultureLevel:F0}";
+            }
+
+            string corruptionInfo = "";
+            if (CaudilloBay.Politics.CorruptionManager.Instance != null)
+            {
+                corruptionInfo = $" | Corruption: {CaudilloBay.Politics.CorruptionManager.Instance.corruptionLevel:F0}% | Black$: {CaudilloBay.Politics.CorruptionManager.Instance.blackMarketMoney:F0}";
+            }
+
+            string dynastyInfo = "";
+            if (CaudilloBay.Politics.DynastyManager.Instance != null && CaudilloBay.Politics.DynastyManager.Instance.currentRuler != null)
+            {
+                dynastyInfo = $" | Ruler: {CaudilloBay.Politics.DynastyManager.Instance.currentRuler.heirName}";
+            }
+
+            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}{educationInfo}{healthInfo}{militaryInfo}{cultureInfo}{corruptionInfo}{dynastyInfo}";
         }
     }
 }
