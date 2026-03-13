@@ -151,5 +151,31 @@ namespace CaudilloBay.Politics
                 Debug.Log($"Issued Decree: {decree.decreeName}");
             }
         }
+
+        public List<SaveSystem.RelationSaveData> GetRelationSaveData()
+        {
+            List<SaveSystem.RelationSaveData> list = new List<SaveSystem.RelationSaveData>();
+            foreach (var f in factions)
+            {
+                foreach (var rel in f.relations)
+                {
+                    list.Add(new SaveSystem.RelationSaveData { factionA = f.type, factionB = rel.Key, value = rel.Value });
+                }
+            }
+            return list;
+        }
+
+        public void LoadRelationSaveData(List<SaveSystem.RelationSaveData> data)
+        {
+            foreach (var d in data)
+            {
+                var f = factions.Find(x => x.type == d.factionA);
+                if (f != null)
+                {
+                    if (f.relations.ContainsKey(d.factionB)) f.relations[d.factionB] = d.value;
+                    else f.relations.Add(d.factionB, d.value);
+                }
+            }
+        }
     }
 }

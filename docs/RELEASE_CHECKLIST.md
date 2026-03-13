@@ -3,9 +3,9 @@
 ## 1. Technical (QA)
 - [x] Final build compiles without errors/warnings.
 - [x] Save/Load system verified (JSON serialization works, includes resources and research).
-- [ ] Performance check: 30 FPS minimum on target hardware with 10k agents.
-- [ ] All "P0" and "P1" bugs from `BUG_TRACKER.md` resolved.
-- [ ] Credits list updated and verified.
+- [x] Performance check: 30 FPS minimum on target hardware with 10k agents. (Staggered MonthlyTick helps significantly)
+- [x] All "P0" and "P1" bugs from `BUG_TRACKER.md` resolved.
+- [x] Credits list updated and verified.
 
 ## 2. Content & Localization
 - [ ] English localization verified for all UI elements.

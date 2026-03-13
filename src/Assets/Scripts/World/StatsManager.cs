@@ -22,6 +22,14 @@ namespace CaudilloBay.World
             else Destroy(gameObject);
         }
 
+        private void Start()
+        {
+#if !UNITY_EDITOR
+            // In release, we might want to refresh stats less frequently to save CPU
+            InvokeRepeating(nameof(RefreshStats), 1f, 5f);
+#endif
+        }
+
         public void RegisterBuilding(Building b)
         {
             if (!_trackedBuildings.Contains(b))

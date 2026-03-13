@@ -58,3 +58,16 @@ Citizens, rejoice! His Excellency El Presidente has officially signed off on the
 *Caudillo Bay* launches on Steam in 48 hours. Secure your mandate. Pre-order now to receive the exclusive 'Golden Mustache' cosmetic set for El Presidente.
 
 **Viva El Presidente!**
+
+---
+
+## 4. Official Launch Announcement
+
+**CAUDILLO BAY IS OUT NOW!**
+
+The wait is over, El Presidente. The docks are full, the palace is polished, and the people are... well, they're here.
+
+Take control of your island destiny today. Whether you rule with an iron fist or a velvet glove, the world is yours to command.
+
+**Community Update #1: The Road Ahead**
+We are already hard at work on the first post-launch patch to address resolution issues and add some requested quality-of-life features. Thank you for the incredible support during our first 24 hours!

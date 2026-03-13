@@ -24,6 +24,14 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class RelationSaveData
+        {
+            public FactionType factionA;
+            public FactionType factionB;
+            public float value;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public float legitimacy;
@@ -33,6 +41,7 @@ namespace CaudilloBay.Core
             public List<ResourceSaveData> resources = new List<ResourceSaveData>();
             public List<string> researchedTechs = new List<string>();
             public List<BodyguardSaveData> bodyguards = new List<BodyguardSaveData>();
+            public List<RelationSaveData> relations = new List<RelationSaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -75,11 +84,22 @@ namespace CaudilloBay.Core
                 data.bodyguards = GlobalMapManager.Instance.GetBodyguardData();
             }
 
+            if (FactionManager.Instance != null)
+            {
+                data.relations = FactionManager.Instance.GetRelationSaveData();
+            }
+
             string json = JsonUtility.ToJson(data, true);
             string path = Path.Combine(Application.persistentDataPath, fileName);
             File.WriteAllText(path, json);
 
             Debug.Log($"Game saved to {path}");
+
+            // Post-release: Integrate with Steam Cloud
+            if (SteamManager.Instance != null)
+            {
+                SteamManager.Instance.TriggerCloudSave(fileName);
+            }
         }
 
         public void LoadGame(string fileName = "savegame.json")
@@ -130,6 +150,11 @@ namespace CaudilloBay.Core
             if (GlobalMapManager.Instance != null)
             {
                 GlobalMapManager.Instance.LoadBodyguardData(data.bodyguards);
+            }
+
+            if (FactionManager.Instance != null)
+            {
+                FactionManager.Instance.LoadRelationSaveData(data.relations);
             }
 
             Debug.Log("Game loaded successfully.");

@@ -146,7 +146,9 @@ namespace CaudilloBay.AI
                     nearestStorage.inventory.TransferTo(localInventory, cost.resourceType, needed);
                 }
             }
+#if UNITY_EDITOR
             Debug.Log($"Builder collected resources from storage for {currentTarget.displayName}.");
+#endif
         }
 
         public void SetTargetConstruction(Transform target)
