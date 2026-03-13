@@ -62,6 +62,31 @@ namespace CaudilloBay.AI
             {
                 // In a real case, update specific factions
             }
+
+            CheckForEmigration();
+        }
+
+        private void CheckForEmigration()
+        {
+            for (int i = allCitizens.Count - 1; i >= 0; i--)
+            {
+                Citizen c = allCitizens[i];
+                if (c.satisfaction < 10f) // Very unhappy
+                {
+                    Emigrate(c);
+                }
+            }
+        }
+
+        public void Emigrate(Citizen citizen)
+        {
+            Debug.Log($"Citizen {citizen.id} is emigrating due to low satisfaction!");
+
+            if (citizen.home != null)
+                citizen.home.residents.Remove(citizen);
+
+            allCitizens.Remove(citizen);
+            Destroy(citizen.gameObject);
         }
     }
 }

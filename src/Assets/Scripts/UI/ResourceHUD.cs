@@ -21,7 +21,13 @@ namespace CaudilloBay.UI
 
             // Display a few key resources for demonstration
             // In a real game, this would loop through all tracked resources
-            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}";
+            string crimeInfo = "";
+            if (CaudilloBay.Core.CrimeManager.Instance != null)
+            {
+                crimeInfo = $" | Crime: {CaudilloBay.Core.CrimeManager.Instance.globalCrimeRate:F1}%";
+            }
+
+            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}";
         }
     }
 }

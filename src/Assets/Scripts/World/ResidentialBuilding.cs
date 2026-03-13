@@ -22,15 +22,26 @@ namespace CaudilloBay.World
 
         public float GetHappiness()
         {
+            float targetHappiness = 50f;
+
             // Happiness depends on food availability in building inventory
             if (foodType != null && inventory.HasResource(foodType, foodConsumptionPerMonth))
             {
-                currentHappiness = Mathf.MoveTowards(currentHappiness, 100f, 5f);
+                targetHappiness = 100f;
             }
             else
             {
-                currentHappiness = Mathf.MoveTowards(currentHappiness, 0f, 10f);
+                targetHappiness = 0f;
             }
+
+            // Penalty for local crime
+            if (CaudilloBay.Core.CrimeManager.Instance != null)
+            {
+                float localCrime = CaudilloBay.Core.CrimeManager.Instance.GetLocalCrimeRate(transform.position);
+                targetHappiness -= localCrime * 0.5f;
+            }
+
+            currentHappiness = Mathf.MoveTowards(currentHappiness, Mathf.Clamp(targetHappiness, 0, 100), 5f);
 
             return currentHappiness;
         }

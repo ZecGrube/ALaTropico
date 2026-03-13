@@ -21,6 +21,12 @@ namespace CaudilloBay.Economy
 
         public void UpdateTourism(float totalAttractiveness, float safetyFactor)
         {
+            // Override safetyFactor with crime rate if CrimeManager is present
+            if (Core.CrimeManager.Instance != null)
+            {
+                safetyFactor = Mathf.Clamp01(1.0f - (Core.CrimeManager.Instance.globalCrimeRate / 100f));
+            }
+
             // Simplified flow calculation
             float targetTourists = totalAttractiveness * safetyFactor * 10f;
             currentTourists = Mathf.RoundToInt(Mathf.Lerp(currentTourists, targetTourists, 0.1f));

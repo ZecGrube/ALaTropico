@@ -14,6 +14,7 @@ namespace CaudilloBay.AI
         public int id;
         public CitizenState currentState = CitizenState.Idle;
         public float satisfaction = 50f;
+        public float fearOfCrime = 0f;
 
         [Header("Associations")]
         public ResidentialBuilding home;
@@ -42,6 +43,19 @@ namespace CaudilloBay.AI
             if (hunger > 80f)
             {
                 // Trigger seek food logic
+            }
+
+            // Update fear and satisfaction based on crime
+            if (Core.CrimeManager.Instance != null)
+            {
+                float localCrime = Core.CrimeManager.Instance.GetLocalCrimeRate(transform.position);
+                fearOfCrime = Mathf.Lerp(fearOfCrime, localCrime, 0.01f);
+
+                // Satisfaction penalty from fear
+                if (fearOfCrime > 20f)
+                {
+                    satisfaction -= (fearOfCrime - 20f) * 0.001f * Time.deltaTime;
+                }
             }
         }
 

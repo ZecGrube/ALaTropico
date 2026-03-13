@@ -92,6 +92,7 @@ namespace CaudilloBay.Core
             public List<string> unlockedAchievements = new List<string>();
             public List<ModifierSaveData> activeModifiers = new List<ModifierSaveData>();
             public List<Politics.SuperpowerType> alliances = new List<Politics.SuperpowerType>();
+            public float crimeRate;
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -180,6 +181,11 @@ namespace CaudilloBay.Core
             if (GlobalMapManager.Instance != null)
             {
                 data.alliances = new List<SuperpowerType>(GlobalMapManager.Instance.alliedSuperpowers);
+            }
+
+            if (CrimeManager.Instance != null)
+            {
+                data.crimeRate = CrimeManager.Instance.globalCrimeRate;
             }
 
             if (StatsManager.Instance != null)
@@ -297,6 +303,11 @@ namespace CaudilloBay.Core
             if (GlobalMapManager.Instance != null)
             {
                 GlobalMapManager.Instance.alliedSuperpowers = new List<SuperpowerType>(data.alliances);
+            }
+
+            if (CrimeManager.Instance != null)
+            {
+                CrimeManager.Instance.globalCrimeRate = data.crimeRate;
             }
 
             // Restore buildings

@@ -61,6 +61,9 @@ namespace CaudilloBay.Politics
             if (Core.ModifierManager.Instance != null)
                 Core.ModifierManager.Instance.ProcessMonthlyTick();
 
+            if (Core.CrimeManager.Instance != null)
+                Core.CrimeManager.Instance.ProcessMonthlyCrime();
+
             CheckRandomEvents();
 
             if (CoupManager.Instance != null)
