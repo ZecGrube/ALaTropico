@@ -27,6 +27,9 @@ namespace CaudilloBay.World
         public List<FactionType> favoredFactions;
         public List<FactionType> dislikedFactions;
 
+        [Header("Ecology")]
+        public float pollutionOutput = 0f;
+
         // IPlaceable implementation
         public string Id => buildingId;
         public (int width, int height) Footprint => (footprint.x, footprint.y);

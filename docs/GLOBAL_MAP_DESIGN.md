@@ -29,6 +29,8 @@ The Global Map system represents the world outside the island. It allows El Pres
   - `Charisma`: Better success in diplomatic missions.
   - `Tech`: Required for stealing blueprints/technologies.
 - **Bodyguards:** Unique agents with fixed high stats and special abilities.
+  - **Personal Missions:** Each bodyguard has 2-3 narrative-driven missions.
+  - **Backstory:** Detailed lore for each of the 10 unique protectors.
 
 ## 3. Technical Architecture
 

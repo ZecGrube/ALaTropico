@@ -11,6 +11,7 @@ namespace CaudilloBay.World
 
         public float totalUnemployment = 0f;
         public float averageHappiness = 50f;
+        public float globalPollution = 0f;
         public Dictionary<string, float> globalStockpiles = new Dictionary<string, float>();
 
         private void Awake()
@@ -24,18 +25,21 @@ namespace CaudilloBay.World
             Building[] allBuildings = UnityEngine.Object.FindObjectsByType<Building>(FindObjectsSortMode.None);
             globalStockpiles.Clear();
             float happinessSum = 0;
+            float pollutionSum = 0;
             int residentialCount = 0;
 
             foreach (var b in allBuildings)
             {
-                // Aggregate resources
-                // Note: Simplified logic for demonstration
+                pollutionSum += b.pollutionOutput;
+
                 if (b is ResidentialBuilding rb)
                 {
                     happinessSum += rb.GetHappiness();
                     residentialCount++;
                 }
             }
+
+            globalPollution = Mathf.Clamp(pollutionSum, 0, 100);
 
             if (residentialCount > 0)
                 averageHappiness = happinessSum / residentialCount;

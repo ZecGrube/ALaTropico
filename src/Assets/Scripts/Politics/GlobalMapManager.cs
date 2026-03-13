@@ -1,0 +1,118 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+namespace CaudilloBay.Politics
+{
+    public class GlobalMapManager : MonoBehaviour
+    {
+        public static GlobalMapManager Instance { get; private set; }
+
+        public List<Superpower> superpowers = new List<Superpower>();
+        public List<Agent> agentPool = new List<Agent>();
+        public List<Bodyguard> bodyguards = new List<Bodyguard>();
+        public List<ActiveMission> activeMissions = new List<ActiveMission>();
+
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+
+            InitializeBodyguards();
+        }
+
+        private void Update()
+        {
+            UpdateMissions(Time.deltaTime);
+        }
+
+        private void UpdateMissions(float deltaTime)
+        {
+            for (int i = activeMissions.Count - 1; i >= 0; i--)
+            {
+                activeMissions[i].Update(deltaTime);
+                if (activeMissions[i].IsComplete)
+                {
+                    CompleteMission(activeMissions[i]);
+                    activeMissions.RemoveAt(i);
+                }
+            }
+        }
+
+        public void StartMission(GlobalMission template, Agent agent)
+        {
+            if (agent.isOnMission) return;
+
+            ActiveMission mission = new ActiveMission
+            {
+                template = template,
+                assignedAgent = agent,
+                timeRemaining = template.duration
+            };
+
+            agent.isOnMission = true;
+            activeMissions.Add(mission);
+        }
+
+        private void CompleteMission(ActiveMission mission)
+        {
+            mission.assignedAgent.isOnMission = false;
+
+            // Handle Bodyguard Personal Mission Progress
+            foreach (var bg in bodyguards)
+            {
+                if (bg == mission.assignedAgent)
+                {
+                    var pm = bg.GetNextMission();
+                    if (pm != null && pm.missionTemplate == mission.template)
+                    {
+                        bg.currentMissionIndex++;
+                        // Use casting to access agent skills if needed, or make skills protected/internal
+                        bg.stealth += pm.skillReward;
+                        Debug.Log($"{bg.agentName} completed personal mission: {pm.title}");
+                    }
+                }
+            }
+
+            float successChance = mission.assignedAgent.GetSuccessChance(mission.template);
+            bool success = UnityEngine.Random.Range(0, 100) < successChance;
+
+            if (success)
+            {
+                foreach (var sp in superpowers)
+                {
+                    if (sp.missionTemplates.Contains(mission.template))
+                    {
+                        sp.relations += mission.template.rewardRelations;
+                        break;
+                    }
+                }
+                Debug.Log($"Mission Successful: {mission.template.title}");
+            }
+            else
+            {
+                Debug.Log($"Mission Failed: {mission.template.title}");
+            }
+        }
+
+        private void InitializeBodyguards()
+        {
+            AddBodyguard("El Charro Negro", 30, 80, 50, 10);
+            AddBodyguard("La Mama Grande", 20, 90, 60, 10);
+            AddBodyguard("El Fantasma", 95, 40, 20, 70);
+            AddBodyguard("Capitan Muerto", 40, 85, 30, 50);
+            AddBodyguard("La Cobre", 85, 70, 40, 20);
+            AddBodyguard("El Padre", 10, 30, 90, 20);
+            AddBodyguard("Gringo", 50, 70, 60, 60);
+            AddBodyguard("La China", 60, 20, 40, 95);
+            AddBodyguard("El Tiburon", 40, 80, 50, 30);
+            AddBodyguard("El Sombra", 70, 60, 60, 40);
+        }
+
+        private void AddBodyguard(string name, float s, float c, float ch, float t)
+        {
+            Bodyguard bg = new Bodyguard { agentName = name, isUnique = true, stealth = s, combat = c, charisma = ch, tech = t };
+            bodyguards.Add(bg);
+            agentPool.Add(bg);
+        }
+    }
+}
