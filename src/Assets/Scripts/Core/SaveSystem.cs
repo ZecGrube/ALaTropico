@@ -93,6 +93,7 @@ namespace CaudilloBay.Core
             public List<ModifierSaveData> activeModifiers = new List<ModifierSaveData>();
             public List<Politics.SuperpowerType> alliances = new List<Politics.SuperpowerType>();
             public float crimeRate;
+            public float educationLevel;
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -186,6 +187,11 @@ namespace CaudilloBay.Core
             if (CrimeManager.Instance != null)
             {
                 data.crimeRate = CrimeManager.Instance.globalCrimeRate;
+            }
+
+            if (EducationManager.Instance != null)
+            {
+                data.educationLevel = EducationManager.Instance.globalEducationLevel;
             }
 
             if (StatsManager.Instance != null)
@@ -308,6 +314,11 @@ namespace CaudilloBay.Core
             if (CrimeManager.Instance != null)
             {
                 CrimeManager.Instance.globalCrimeRate = data.crimeRate;
+            }
+
+            if (EducationManager.Instance != null)
+            {
+                EducationManager.Instance.globalEducationLevel = data.educationLevel;
             }
 
             // Restore buildings

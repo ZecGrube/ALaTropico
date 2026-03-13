@@ -15,6 +15,7 @@ namespace CaudilloBay.AI
         public CitizenState currentState = CitizenState.Idle;
         public float satisfaction = 50f;
         public float fearOfCrime = 0f;
+        public float educationLevel = 0f;
 
         [Header("Associations")]
         public ResidentialBuilding home;
@@ -64,7 +65,11 @@ namespace CaudilloBay.AI
             switch (currentState)
             {
                 case CitizenState.Idle:
-                    if (workplace != null && IsWorkTime())
+                    if (hunger > 70f)
+                    {
+                        SeekFood();
+                    }
+                    else if (workplace != null && IsWorkTime())
                         GoToWork();
                     break;
                 case CitizenState.GoingToWork:
@@ -83,6 +88,13 @@ namespace CaudilloBay.AI
                     {
                         currentState = CitizenState.Idle;
                         agent.isStopped = true;
+                    }
+                    break;
+                case CitizenState.SeekingFood:
+                    if (agent.remainingDistance < 1f)
+                    {
+                        Eat();
+                        GoHome();
                     }
                     break;
             }
@@ -108,6 +120,27 @@ namespace CaudilloBay.AI
             currentState = CitizenState.GoingHome;
             agent.isStopped = false;
             agent.SetDestination(home.transform.position);
+        }
+
+        public void SeekFood()
+        {
+            // Find nearest market or home with food
+            if (home != null && home.inventory.HasResource(home.foodType, 1.0f))
+            {
+                currentState = CitizenState.SeekingFood;
+                agent.isStopped = false;
+                agent.SetDestination(home.transform.position);
+            }
+        }
+
+        private void Eat()
+        {
+            if (home != null && home.inventory.HasResource(home.foodType, 1.0f))
+            {
+                home.inventory.RemoveResource(home.foodType, 1.0f);
+                hunger = 0f;
+                satisfaction = Mathf.Min(satisfaction + 10f, 100f);
+            }
         }
     }
 }

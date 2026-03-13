@@ -97,9 +97,30 @@ namespace CaudilloBay.AI
                         break;
                     }
 
+                    if (!HasRequiredResources())
+                    {
+                        DetermineNextStep();
+                        break;
+                    }
+
                     // Spend resources and add progress
+                    ConsumeResourcesForConstruction();
                     currentTarget.AddProgress(Time.deltaTime * buildSpeed);
                     break;
+            }
+        }
+
+        private void ConsumeResourcesForConstruction()
+        {
+            if (currentTarget == null) return;
+            // Proportionally consume resources relative to time and build speed
+            float progressDelta = Time.deltaTime * buildSpeed;
+            float totalBuildTime = currentTarget.constructionTime;
+
+            foreach (var cost in currentTarget.buildCosts)
+            {
+                float amountToConsume = (cost.amount / totalBuildTime) * progressDelta;
+                localInventory.RemoveResource(cost.resourceType, amountToConsume);
             }
         }
 

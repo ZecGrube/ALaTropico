@@ -64,6 +64,9 @@ namespace CaudilloBay.Politics
             if (Core.CrimeManager.Instance != null)
                 Core.CrimeManager.Instance.ProcessMonthlyCrime();
 
+            if (Core.EducationManager.Instance != null)
+                Core.EducationManager.Instance.ProcessMonthlyEducation();
+
             CheckRandomEvents();
 
             if (CoupManager.Instance != null)

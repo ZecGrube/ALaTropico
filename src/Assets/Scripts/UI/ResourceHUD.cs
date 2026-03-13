@@ -27,7 +27,13 @@ namespace CaudilloBay.UI
                 crimeInfo = $" | Crime: {CaudilloBay.Core.CrimeManager.Instance.globalCrimeRate:F1}%";
             }
 
-            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}";
+            string educationInfo = "";
+            if (CaudilloBay.Core.EducationManager.Instance != null)
+            {
+                educationInfo = $" | Edu: {CaudilloBay.Core.EducationManager.Instance.globalEducationLevel:F1}%";
+            }
+
+            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}{educationInfo}";
         }
     }
 }
