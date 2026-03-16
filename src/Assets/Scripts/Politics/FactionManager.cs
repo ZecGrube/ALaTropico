@@ -73,6 +73,9 @@ namespace CaudilloBay.Politics
             if (Core.CultureManager.Instance != null)
                 Core.CultureManager.Instance.ProcessMonthlyCulture();
 
+            if (Core.CorruptionManager.Instance != null)
+                Core.CorruptionManager.Instance.ProcessMonthlyCorruption();
+
             CheckRandomEvents();
 
             if (CoupManager.Instance != null)
@@ -165,6 +168,19 @@ namespace CaudilloBay.Politics
             {
                 if (dataA.relations.ContainsKey(b)) dataA.relations[b] += delta;
                 else dataA.relations.Add(b, delta);
+            }
+        }
+
+        public void BribeFaction(FactionType type, float amount)
+        {
+            if (Core.CorruptionManager.Instance != null && Core.CorruptionManager.Instance.SpendBlackMarketMoney(amount))
+            {
+                var faction = factions.Find(f => f.type == type);
+                if (faction != null)
+                {
+                    faction.loyalty = Mathf.Min(faction.loyalty + (amount / 100f), 100f);
+                    Debug.Log($"Bribed {type} for ${amount}. New loyalty: {faction.loyalty}");
+                }
             }
         }
 

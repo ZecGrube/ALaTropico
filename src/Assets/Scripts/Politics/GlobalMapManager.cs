@@ -120,6 +120,12 @@ namespace CaudilloBay.Politics
                     }
                 }
                 Debug.Log($"Mission Successful: {mission.template.title}");
+
+                // Shadow Rewards
+                if (mission.template.title.Contains("Smuggling") && Core.CorruptionManager.Instance != null)
+                {
+                    Core.CorruptionManager.Instance.AddBlackMarketMoney(500f);
+                }
             }
             else
             {

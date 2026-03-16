@@ -15,6 +15,8 @@ namespace CaudilloBay.AI
         public BuilderState currentState = BuilderState.Idle;
         public float buildRange = 2f;
         public float buildSpeed = 1f;
+        private float searchTimer = 0f;
+        private float searchInterval = 10f;
 
         [Header("Inventory")]
         public Inventory localInventory = new Inventory { maxWeight = 20f };
@@ -32,6 +34,12 @@ namespace CaudilloBay.AI
 
         private void Update()
         {
+            searchTimer += Time.deltaTime;
+            if (searchTimer >= searchInterval)
+            {
+                nearestStorage = UnityEngine.Object.FindAnyObjectByType<StorageBuilding>();
+                searchTimer = 0f;
+            }
             UpdateState();
         }
 

@@ -13,18 +13,26 @@ namespace CaudilloBay.World
         public float ProductionRate => productionRate;
         public bool CanProduce => IsFunctional() && HasInputResources();
 
+        private float logisticsCheckTimer = 0f;
+        private float logisticsCheckInterval = 5f;
+
         private void Update()
         {
             if (IsFunctional())
             {
-                if (!HasInputResources())
+                logisticsCheckTimer += Time.deltaTime;
+                if (logisticsCheckTimer >= logisticsCheckInterval)
                 {
-                    RequestInputs();
-                }
+                    if (!HasInputResources())
+                    {
+                        RequestInputs();
+                    }
 
-                if (IsOutputStockHigh())
-                {
-                    RequestOutputPickup();
+                    if (IsOutputStockHigh())
+                    {
+                        RequestOutputPickup();
+                    }
+                    logisticsCheckTimer = 0f;
                 }
             }
         }

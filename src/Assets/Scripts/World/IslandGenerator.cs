@@ -58,6 +58,13 @@ namespace CaudilloBay.World
                     }
                 }
             }
+
+            // Bake NavMesh for agents
+            var navSurface = GetComponent<Unity.AI.Navigation.NavMeshSurface>();
+            if (navSurface != null)
+            {
+                navSurface.BuildNavMesh();
+            }
         }
 
         private GameObject GetPrefabForNoise(float noise)

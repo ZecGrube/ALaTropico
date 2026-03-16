@@ -46,8 +46,17 @@ namespace CaudilloBay.Economy
                 ApplyMonthlyPoliticalEffects(b);
             }
 
-            treasuryBalance -= totalMaintenance;
-            Debug.Log($"Monthly Economy processed. Total Maintenance: {totalMaintenance}. Treasury: {treasuryBalance}");
+            // Tax calculation (simplified)
+            float grossTax = buildings.Count * 50f; // Mock tax per building
+            float corruptionLoss = 0f;
+            if (Core.CorruptionManager.Instance != null)
+            {
+                corruptionLoss = grossTax * (Core.CorruptionManager.Instance.globalCorruptionRate / 100f);
+                Core.CorruptionManager.Instance.AddBlackMarketMoney(corruptionLoss * 0.5f); // 50% of corruption loss goes to player shadow funds
+            }
+
+            treasuryBalance += (grossTax - corruptionLoss - totalMaintenance);
+            Debug.Log($"Monthly Economy processed. Maintenance: {totalMaintenance}. Tax: {grossTax}. Corruption Loss: {corruptionLoss}. Treasury: {treasuryBalance}");
         }
 
         private void ApplyMonthlyPoliticalEffects(Building b)

@@ -98,6 +98,8 @@ namespace CaudilloBay.Core
             public float cultureLevel;
             public float armyTraining;
             public float armyLoyalty;
+            public float corruptionRate;
+            public float blackMarketMoney;
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -212,6 +214,12 @@ namespace CaudilloBay.Core
             {
                 data.armyTraining = MilitaryManager.Instance.trainingLevel;
                 data.armyLoyalty = MilitaryManager.Instance.armyLoyalty;
+            }
+
+            if (CorruptionManager.Instance != null)
+            {
+                data.corruptionRate = CorruptionManager.Instance.globalCorruptionRate;
+                data.blackMarketMoney = CorruptionManager.Instance.blackMarketMoney;
             }
 
             if (StatsManager.Instance != null)
@@ -356,6 +364,12 @@ namespace CaudilloBay.Core
                 MilitaryManager.Instance.trainingLevel = data.armyTraining;
                 MilitaryManager.Instance.armyLoyalty = data.armyLoyalty;
                 MilitaryManager.Instance.UpdateMilitaryStrength();
+            }
+
+            if (CorruptionManager.Instance != null)
+            {
+                CorruptionManager.Instance.globalCorruptionRate = data.corruptionRate;
+                CorruptionManager.Instance.blackMarketMoney = data.blackMarketMoney;
             }
 
             // Restore buildings

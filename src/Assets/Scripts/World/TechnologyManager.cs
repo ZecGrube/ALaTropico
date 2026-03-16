@@ -11,6 +11,7 @@ namespace CaudilloBay.World
 
         public List<Technology> allTechnologies = new List<Technology>();
         private HashSet<string> researchedTechIds = new HashSet<string>();
+        private Dictionary<string, string> _buildingToTechCache = new Dictionary<string, string>();
 
         [Header("Research State")]
         public float currentResearchPoints = 0f;
@@ -21,6 +22,28 @@ namespace CaudilloBay.World
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
+
+            PopulateCache();
+        }
+
+        private void PopulateCache()
+        {
+            _buildingToTechCache.Clear();
+            foreach (var tech in allTechnologies)
+            {
+                foreach (var prefab in tech.unlockedBuildings)
+                {
+                    if (prefab != null)
+                    {
+                        Building b = prefab.GetComponent<Building>();
+                        if (b != null && b.data != null)
+                        {
+                            if (!_buildingToTechCache.ContainsKey(b.data.buildingId))
+                                _buildingToTechCache.Add(b.data.buildingId, tech.techId);
+                        }
+                    }
+                }
+            }
         }
 
         private void Update()
@@ -81,10 +104,16 @@ namespace CaudilloBay.World
             researchProgress = 0f;
 
             // Apply loyalty effects
-            foreach (var effect in tech.loyaltyEffects)
+            if (FactionManager.Instance != null)
             {
-                // In a real case, call FactionManager
-                // FactionManager.Instance.ModifyLoyalty(effect.faction, effect.effect);
+                foreach (var effect in tech.loyaltyEffects)
+                {
+                    var faction = FactionManager.Instance.factions.Find(f => f.type == effect.faction);
+                    if (faction != null)
+                    {
+                        faction.loyalty = Mathf.Clamp(faction.loyalty + effect.effect, 0, 100);
+                    }
+                }
             }
 
             Debug.Log($"Research Completed: {tech.techName}");
@@ -92,26 +121,11 @@ namespace CaudilloBay.World
 
         public bool IsBuildingUnlocked(string buildingId)
         {
-            // For now, if it's not explicitly in any tech's unlock list, it's considered free
-            // If it is in an unlock list, check if that tech is researched
-            bool foundInAnyTech = false;
-            foreach (var tech in allTechnologies)
+            if (_buildingToTechCache.TryGetValue(buildingId, out string techId))
             {
-                foreach (var prefab in tech.unlockedBuildings)
-                {
-                    if (prefab != null)
-                    {
-                        // Check against the building data ID if possible, or prefab name
-                        Building b = prefab.GetComponent<Building>();
-                        if (b != null && b.data != null && b.data.buildingId == buildingId)
-                        {
-                            foundInAnyTech = true;
-                            if (IsResearched(tech.techId)) return true;
-                        }
-                    }
-                }
+                return IsResearched(techId);
             }
-            return !foundInAnyTech;
+            return true; // Uncached buildings are free
         }
 
         public bool IsResearched(string techId)

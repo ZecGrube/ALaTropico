@@ -51,7 +51,13 @@ namespace CaudilloBay.UI
                 cultureInfo = $" | CULT: {CaudilloBay.Core.CultureManager.Instance.globalCultureLevel:F1}%";
             }
 
-            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}{educationInfo}{healthInfo}{militaryInfo}{cultureInfo}";
+            string corruptionInfo = "";
+            if (CaudilloBay.Core.CorruptionManager.Instance != null)
+            {
+                corruptionInfo = $" | CORR: {CaudilloBay.Core.CorruptionManager.Instance.globalCorruptionRate:F1}% | BLACK: ${CaudilloBay.Core.CorruptionManager.Instance.blackMarketMoney:F0}";
+            }
+
+            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}{educationInfo}{healthInfo}{militaryInfo}{cultureInfo}{corruptionInfo}";
         }
     }
 }

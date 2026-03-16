@@ -47,30 +47,22 @@ namespace CaudilloBay.World
             }
         }
 
+        private Dictionary<string, float> _abstractStockpiles = new Dictionary<string, float>();
+
         public void AddResource(string resourceId, float amount)
         {
-            if (globalStockpiles.ContainsKey(resourceId))
-                globalStockpiles[resourceId] += amount;
+            if (_abstractStockpiles.ContainsKey(resourceId))
+                _abstractStockpiles[resourceId] += amount;
             else
-                globalStockpiles.Add(resourceId, amount);
+                _abstractStockpiles.Add(resourceId, amount);
         }
 
         public void RefreshStats()
         {
-            // Instead of clearing and rebuilding from scratch,
-            // we should separate "Physical Stockpiles" (in buildings)
-            // from "Abstract Stockpiles" (treasury/aid).
-            // For now, let's just NOT clear and let the physical aggregation be additive?
-            // No, that would double count.
-
-            // Refactored: track "External" resources that aren't in buildings
-            Dictionary<string, float> externalStockpiles = new Dictionary<string, float>();
-            // Copy existing values, then subtract what we found in buildings? No.
-
-            // Let's assume globalStockpiles is ONLY for aggregation display,
-            // and aid should be added to the PALACE inventory.
-
             globalStockpiles.Clear();
+            // Restore abstract ones first
+            foreach(var kvp in _abstractStockpiles) globalStockpiles.Add(kvp.Key, kvp.Value);
+
             float happinessSum = 0;
             float pollutionSum = 0;
             int residentialCount = 0;
