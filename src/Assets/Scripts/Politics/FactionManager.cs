@@ -76,6 +76,9 @@ namespace CaudilloBay.Politics
             if (Core.CorruptionManager.Instance != null)
                 Core.CorruptionManager.Instance.ProcessMonthlyCorruption();
 
+            if (DynastyManager.Instance != null)
+                DynastyManager.Instance.ProcessMonthlyDynasty();
+
             CheckRandomEvents();
 
             if (CoupManager.Instance != null)
@@ -227,6 +230,26 @@ namespace CaudilloBay.Politics
                     else f.relations.Add(d.factionB, d.value);
                 }
             }
+        }
+
+        public Heir GetPreferredHeir(FactionData faction)
+        {
+            if (DynastyManager.Instance == null) return null;
+            Heir best = null;
+            float maxSupport = -1f;
+
+            foreach (var h in DynastyManager.Instance.activeHeirs)
+            {
+                if (h.factionSupport.TryGetValue(faction.type, out float support))
+                {
+                    if (support > maxSupport)
+                    {
+                        maxSupport = support;
+                        best = h;
+                    }
+                }
+            }
+            return best;
         }
     }
 }

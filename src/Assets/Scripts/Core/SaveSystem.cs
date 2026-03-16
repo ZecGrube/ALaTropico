@@ -100,6 +100,8 @@ namespace CaudilloBay.Core
             public float armyLoyalty;
             public float corruptionRate;
             public float blackMarketMoney;
+            public Heir currentRuler;
+            public List<Heir> heirs = new List<Heir>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -220,6 +222,12 @@ namespace CaudilloBay.Core
             {
                 data.corruptionRate = CorruptionManager.Instance.globalCorruptionRate;
                 data.blackMarketMoney = CorruptionManager.Instance.blackMarketMoney;
+            }
+
+            if (DynastyManager.Instance != null)
+            {
+                data.currentRuler = DynastyManager.Instance.currentRuler;
+                data.heirs = new List<Heir>(DynastyManager.Instance.activeHeirs);
             }
 
             if (StatsManager.Instance != null)
@@ -370,6 +378,12 @@ namespace CaudilloBay.Core
             {
                 CorruptionManager.Instance.globalCorruptionRate = data.corruptionRate;
                 CorruptionManager.Instance.blackMarketMoney = data.blackMarketMoney;
+            }
+
+            if (DynastyManager.Instance != null)
+            {
+                DynastyManager.Instance.currentRuler = data.currentRuler;
+                DynastyManager.Instance.activeHeirs = new List<Heir>(data.heirs);
             }
 
             // Restore buildings

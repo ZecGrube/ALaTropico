@@ -126,6 +126,11 @@ namespace CaudilloBay.Politics
                 {
                     Core.CorruptionManager.Instance.AddBlackMarketMoney(500f);
                 }
+
+                if (mission.template.title.Contains("Marriage") && DynastyManager.Instance != null)
+                {
+                    DynastyManager.Instance.AddHeir("Consort from Abroad");
+                }
             }
             else
             {
