@@ -27,6 +27,16 @@ namespace CaudilloBay.Economy
                 totalAttractiveness += Core.CultureManager.Instance.globalCultureLevel;
             }
 
+            // Religion and Cult bonus
+            if (Core.ReligionManager.Instance != null)
+            {
+                totalAttractiveness += Core.ReligionManager.Instance.religiousInfluence * 0.5f;
+            }
+            if (Core.PersonalityCultManager.Instance != null)
+            {
+                totalAttractiveness += Core.PersonalityCultManager.Instance.cultLevel * 0.3f;
+            }
+
             // Override safetyFactor with crime rate if CrimeManager is present
             if (Core.CrimeManager.Instance != null)
             {

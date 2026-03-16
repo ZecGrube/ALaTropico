@@ -83,6 +83,12 @@ namespace CaudilloBay.Politics
             if (DynastyManager.Instance != null)
                 DynastyManager.Instance.ProcessMonthlyDynasty();
 
+            if (Core.ReligionManager.Instance != null)
+                Core.ReligionManager.Instance.ProcessMonthlyUpdate();
+
+            if (Core.PersonalityCultManager.Instance != null)
+                Core.PersonalityCultManager.Instance.ProcessMonthlyUpdate();
+
             CheckRandomEvents();
 
             if (CoupManager.Instance != null)

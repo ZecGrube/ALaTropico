@@ -118,6 +118,9 @@ namespace CaudilloBay.Core
             public float blackMarketMoney;
             public Heir currentRuler;
             public List<Heir> heirs = new List<Heir>();
+            public float religiousInfluence;
+            public Politics.ReligiousLeader religiousLeader;
+            public float cultLevel;
             public float currentResearchPoints;
             public string currentResearchId;
             public float researchProgress;
@@ -248,6 +251,17 @@ namespace CaudilloBay.Core
             {
                 data.currentRuler = DynastyManager.Instance.currentRuler;
                 data.heirs = new List<Heir>(DynastyManager.Instance.activeHeirs);
+            }
+
+            if (ReligionManager.Instance != null)
+            {
+                data.religiousInfluence = ReligionManager.Instance.religiousInfluence;
+                data.religiousLeader = ReligionManager.Instance.currentLeader;
+            }
+
+            if (PersonalityCultManager.Instance != null)
+            {
+                data.cultLevel = PersonalityCultManager.Instance.cultLevel;
             }
 
             if (TechnologyManager.Instance != null)
@@ -439,6 +453,17 @@ namespace CaudilloBay.Core
             {
                 DynastyManager.Instance.currentRuler = data.currentRuler;
                 DynastyManager.Instance.activeHeirs = new List<Heir>(data.heirs);
+            }
+
+            if (ReligionManager.Instance != null)
+            {
+                ReligionManager.Instance.religiousInfluence = data.religiousInfluence;
+                ReligionManager.Instance.currentLeader = data.religiousLeader;
+            }
+
+            if (PersonalityCultManager.Instance != null)
+            {
+                PersonalityCultManager.Instance.cultLevel = data.cultLevel;
             }
 
             if (TechnologyManager.Instance != null)
