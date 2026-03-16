@@ -54,6 +54,23 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class CitizenSaveData
+        {
+            public int id;
+            public string firstName;
+            public string lastName;
+            public AI.Gender gender;
+            public int age;
+            public float wealth;
+            public float satisfaction;
+            public float health;
+            public AI.SocialClass socialClass;
+            public AI.EducationLevel education;
+            public AI.PersonalityTraits traits;
+            public List<AI.FactionLeaningEntry> leanings;
+        }
+
+        [System.Serializable]
         public class BuildingSaveData
         {
             public string buildingId;
@@ -103,6 +120,7 @@ namespace CaudilloBay.Core
             public List<RelationSaveData> relations = new List<RelationSaveData>();
             public List<ObjectiveSaveData> missionObjectives = new List<ObjectiveSaveData>();
             public List<BuildingSaveData> buildings = new List<BuildingSaveData>();
+            public List<CitizenSaveData> population = new List<CitizenSaveData>();
             public List<string> completedTutorialSteps = new List<string>();
             public List<string> unlockedAchievements = new List<string>();
             public List<ModifierSaveData> activeModifiers = new List<ModifierSaveData>();
@@ -277,6 +295,27 @@ namespace CaudilloBay.Core
                 foreach (var kvp in StatsManager.Instance.GetAbstractStockpiles())
                 {
                     data.abstractStockpiles.Add(new ResourceSaveData { resourceId = kvp.Key, amount = kvp.Value });
+                }
+            }
+
+            if (AI.PopulationManager.Instance != null)
+            {
+                foreach (var c in AI.PopulationManager.Instance.allCitizens)
+                {
+                    data.population.Add(new CitizenSaveData {
+                        id = c.id,
+                        firstName = c.firstName,
+                        lastName = c.lastName,
+                        gender = c.gender,
+                        age = c.age,
+                        wealth = c.personalWealth,
+                        satisfaction = c.satisfaction,
+                        health = c.health,
+                        socialClass = c.socialClass,
+                        education = c.education,
+                        traits = c.traits,
+                        leanings = new List<AI.FactionLeaningEntry>(c.politicalLeanings)
+                    });
                 }
             }
 

@@ -26,6 +26,20 @@ namespace CaudilloBay.Economy
         public void ProcessMonthlyEconomy(List<Building> buildings)
         {
             float totalMaintenance = 0f;
+            float totalIncomeTax = 0f;
+
+            if (AI.PopulationManager.Instance != null)
+            {
+                foreach (var c in AI.PopulationManager.Instance.allCitizens)
+                {
+                    if (c.workplace != null)
+                    {
+                        float tax = c.salary * 0.1f; // 10% flat PIT
+                        c.personalWealth -= tax;
+                        totalIncomeTax += tax;
+                    }
+                }
+            }
             float totalPollution = 0f;
             float totalCorporateTaxes = 0f;
 
@@ -77,7 +91,7 @@ namespace CaudilloBay.Economy
                 Core.CorruptionManager.Instance.AddBlackMarketMoney(corruptionLoss * 0.5f); // 50% of corruption loss goes to player shadow funds
             }
 
-            treasuryBalance += (grossTax + totalCorporateTaxes - corruptionLoss - totalMaintenance);
+            treasuryBalance += (grossTax + totalCorporateTaxes + totalIncomeTax - corruptionLoss - totalMaintenance);
 
             if (CorporationManager.Instance != null)
                 CorporationManager.Instance.ProcessMonthlyFinances();

@@ -8,6 +8,7 @@ namespace CaudilloBay.World
     public class ProducerBuilding : Building, IProducer
     {
         public float productionRate = 1.0f;
+        public List<CaudilloBay.AI.Citizen> employees = new List<CaudilloBay.AI.Citizen>();
         private float currentCycleTimer = 0f;
 
         public float ProductionRate => productionRate;
@@ -116,6 +117,7 @@ namespace CaudilloBay.World
         private void ProduceOutputsWithEducation()
         {
             float healthMultiplier = 1.0f;
+            float employeeEfficiency = employees.Count > 0 ? (float)employees.Count / 10f : 1.0f; // Mock efficiency
             if (Core.HealthManager.Instance != null)
             {
                 healthMultiplier = 0.5f + (Core.HealthManager.Instance.globalHealthLevel / 200f);
@@ -135,7 +137,7 @@ namespace CaudilloBay.World
 
             foreach (var output in data.production)
             {
-                inventory.AddResource(output.resourceType, output.amount * healthMultiplier * educationMultiplier * modifierMultiplier);
+                inventory.AddResource(output.resourceType, output.amount * healthMultiplier * educationMultiplier * modifierMultiplier * employeeEfficiency);
             }
         }
 

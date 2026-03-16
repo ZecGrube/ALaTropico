@@ -118,6 +118,23 @@ namespace CaudilloBay.Politics
             {
                 // Incorporate overall citizen satisfaction
                 targetSatisfaction = Mathf.Lerp(targetSatisfaction, AI.PopulationManager.Instance.averageSatisfaction, 0.5f);
+
+                // Aggregate individual leanings for this faction
+                float leaningSum = 0;
+                int count = 0;
+                foreach (var c in AI.PopulationManager.Instance.allCitizens)
+                {
+                    foreach (var leaning in c.politicalLeanings)
+                    {
+                        if (leaning.faction == faction.type)
+                        {
+                            leaningSum += leaning.value;
+                            count++;
+                            break;
+                        }
+                    }
+                }
+                if (count > 0) targetSatisfaction = Mathf.Lerp(targetSatisfaction, leaningSum / count, 0.3f);
             }
 
             switch (faction.type)

@@ -1,36 +1,101 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 using CaudilloBay.World;
 using CaudilloBay.Data;
+using CaudilloBay.Politics;
 
 namespace CaudilloBay.AI
 {
-    public enum CitizenState { Idle, GoingToWork, Working, GoingHome, SeekingFood }
+    public enum CitizenState { Idle, GoingToWork, Working, GoingHome, SeekingFood, Protesting }
+    public enum SocialClass { Poor, WorkingClass, MiddleClass, Rich }
+    public enum EducationLevel { None, Basic, Secondary, Vocational, Higher }
+    public enum Gender { Male, Female }
+
+    [System.Serializable]
+    public struct PersonalityTraits
+    {
+        public float aggressiveness;
+        public float ambition;
+        public float charisma;
+        public float loyalty;
+        public float greed;
+        public float faith;
+        public float curiosity;
+    }
+
+    [System.Serializable]
+    public struct FactionLeaningEntry
+    {
+        public FactionType faction;
+        public float value;
+    }
 
     [RequireComponent(typeof(NavMeshAgent))]
     public class Citizen : MonoBehaviour
     {
-        [Header("Profile")]
+        [Header("Identity")]
         public int id;
+        public string firstName;
+        public string lastName;
+        public Gender gender;
+        public int age;
         public CitizenState currentState = CitizenState.Idle;
+
+        [Header("Socio-Economics")]
+        public SocialClass socialClass = SocialClass.WorkingClass;
+        public EducationLevel education = EducationLevel.Basic;
+        public float personalWealth = 100f;
+        public float salary = 50f;
+
+        [Header("Social")]
+        public Family family;
+        public List<int> friendIds = new List<int>();
+
+        [Header("Traits & Politics")]
+        public PersonalityTraits traits;
+        public List<FactionLeaningEntry> politicalLeanings = new List<FactionLeaningEntry>();
+
+        [Header("Needs & Happiness")]
         public float satisfaction = 50f;
         public float fearOfCrime = 0f;
-        public float educationLevel = 0f;
         public float health = 100f;
+        public float hunger = 0f;
+        public float hungerRate = 0.1f;
 
         [Header("Associations")]
         public ResidentialBuilding home;
         public Building workplace;
-
-        [Header("Needs")]
-        public float hunger = 0f;
-        public float hungerRate = 0.1f;
 
         private NavMeshAgent agent;
 
         private void Start()
         {
             agent = GetComponent<NavMeshAgent>();
+            if (string.IsNullOrEmpty(firstName)) GenerateRandomIdentity();
+        }
+
+        private void GenerateRandomIdentity()
+        {
+            firstName = "Juan"; // Placeholder generator
+            lastName = "Perez";
+            gender = Random.value > 0.5f ? Gender.Male : Gender.Female;
+            age = Random.Range(18, 60);
+
+            traits = new PersonalityTraits {
+                aggressiveness = Random.Range(0, 100),
+                ambition = Random.Range(0, 100),
+                charisma = Random.Range(0, 100),
+                loyalty = Random.Range(0, 100),
+                greed = Random.Range(0, 100),
+                faith = Random.Range(0, 100),
+                curiosity = Random.Range(0, 100)
+            };
+
+            foreach (FactionType type in System.Enum.GetValues(typeof(FactionType)))
+            {
+                politicalLeanings.Add(new FactionLeaningEntry { faction = type, value = 50f });
+            }
         }
 
         private void Update()
@@ -42,23 +107,27 @@ namespace CaudilloBay.AI
         private void UpdateNeeds()
         {
             hunger += hungerRate * Time.deltaTime;
-            if (hunger > 80f)
-            {
-                // Trigger seek food logic
-            }
 
-            // Update fear and satisfaction based on crime
+            // Health decay with age
+            if (age > 60) health -= 0.001f * Time.deltaTime;
+
             if (Core.CrimeManager.Instance != null)
             {
                 float localCrime = Core.CrimeManager.Instance.GetLocalCrimeRate(transform.position);
                 fearOfCrime = Mathf.Lerp(fearOfCrime, localCrime, 0.01f);
-
-                // Satisfaction penalty from fear
-                if (fearOfCrime > 20f)
-                {
-                    satisfaction -= (fearOfCrime - 20f) * 0.001f * Time.deltaTime;
-                }
             }
+
+            CalculateHappiness();
+        }
+
+        public void CalculateHappiness()
+        {
+            float targetSatisfaction = 100f - hunger;
+            targetSatisfaction -= fearOfCrime * 0.5f;
+            targetSatisfaction += (health - 50f);
+            targetSatisfaction += Mathf.Log10(personalWealth + 1) * 10f;
+
+            satisfaction = Mathf.Lerp(satisfaction, Mathf.Clamp(targetSatisfaction, 0, 100), 0.05f);
         }
 
         private void UpdateBehavior()
@@ -66,46 +135,25 @@ namespace CaudilloBay.AI
             switch (currentState)
             {
                 case CitizenState.Idle:
-                    if (hunger > 70f)
-                    {
-                        SeekFood();
-                    }
-                    else if (workplace != null && IsWorkTime())
-                        GoToWork();
+                    if (hunger > 70f) SeekFood();
+                    else if (workplace != null && IsWorkTime()) GoToWork();
                     break;
                 case CitizenState.GoingToWork:
-                    if (agent.remainingDistance < 1f)
-                    {
-                        currentState = CitizenState.Working;
-                        agent.isStopped = true;
-                    }
+                    if (agent.remainingDistance < 1f) { currentState = CitizenState.Working; agent.isStopped = true; }
                     break;
                 case CitizenState.Working:
-                    if (!IsWorkTime())
-                        GoHome();
+                    if (!IsWorkTime()) GoHome();
                     break;
                 case CitizenState.GoingHome:
-                    if (agent.remainingDistance < 1f)
-                    {
-                        currentState = CitizenState.Idle;
-                        agent.isStopped = true;
-                    }
+                    if (agent.remainingDistance < 1f) { currentState = CitizenState.Idle; agent.isStopped = true; }
                     break;
                 case CitizenState.SeekingFood:
-                    if (agent.remainingDistance < 1f)
-                    {
-                        Eat();
-                        GoHome();
-                    }
+                    if (agent.remainingDistance < 1f) { Eat(); GoHome(); }
                     break;
             }
         }
 
-        private bool IsWorkTime()
-        {
-            // Placeholder for game time logic
-            return true;
-        }
+        private bool IsWorkTime() => true; // Simulation time placeholder
 
         public void GoToWork()
         {
@@ -125,7 +173,6 @@ namespace CaudilloBay.AI
 
         public void SeekFood()
         {
-            // Find nearest market or home with food
             if (home != null && home.inventory.HasResource(home.foodType, 1.0f))
             {
                 currentState = CitizenState.SeekingFood;
@@ -140,26 +187,14 @@ namespace CaudilloBay.AI
             {
                 home.inventory.RemoveResource(home.foodType, 1.0f);
                 hunger = 0f;
-                satisfaction = Mathf.Min(satisfaction + 10f, 100f);
-                health = Mathf.Min(health + 5f, 100f);
+                personalWealth -= 5f; // Cost of food
             }
         }
 
         public void UpdateHealth(float delta)
         {
             health = Mathf.Clamp(health + delta, 0, 100);
-            if (health <= 0)
-            {
-                Die();
-            }
-        }
-
-        private void Die()
-        {
-            if (PopulationManager.Instance != null)
-            {
-                PopulationManager.Instance.Die(this);
-            }
+            if (health <= 0) PopulationManager.Instance.Die(this);
         }
     }
 }

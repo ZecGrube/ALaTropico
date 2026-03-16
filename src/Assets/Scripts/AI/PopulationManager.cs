@@ -57,13 +57,36 @@ namespace CaudilloBay.AI
             averageSatisfaction = satSum / allCitizens.Count;
             unemploymentRate = (float)unemployedCount / allCitizens.Count;
 
-            // Notify politics
-            if (FactionManager.Instance != null)
+            // Handle Demographic cycle monthly
+            foreach (var c in allCitizens)
             {
-                // In a real case, update specific factions
+                // Aging: every 12 months in logic
+                if (Random.value < 0.08f) c.age++;
+
+                // Income distribution
+                if (c.workplace != null) c.personalWealth += c.salary;
             }
 
+            CheckForDemographics();
             CheckForEmigration();
+        }
+
+        private void CheckForDemographics()
+        {
+            // Simplified birth logic
+            int potentialMothers = allCitizens.FindAll(c => c.gender == Gender.Female && c.age > 18 && c.age < 45).Count;
+            if (Random.value < (potentialMothers * 0.001f))
+            {
+                // Find a house with capacity for a new citizen
+                foreach (var b in StatsManager.Instance.GetTrackedBuildings())
+                {
+                    if (b is ResidentialBuilding rb && rb.residents.Count < rb.capacity)
+                    {
+                        SpawnCitizen(rb);
+                        break;
+                    }
+                }
+            }
         }
 
         private void CheckForEmigration()
