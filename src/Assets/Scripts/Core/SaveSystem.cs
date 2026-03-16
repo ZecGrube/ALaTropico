@@ -40,6 +40,20 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class CorporationSaveData
+        {
+            public string name;
+            public Economy.CorporationType type;
+            public Economy.IndustryType industry;
+            public float treasury;
+            public int shares;
+            public float sharePrice;
+            public float stateOwn;
+            public float privateOwn;
+            public float foreignOwn;
+        }
+
+        [System.Serializable]
         public class BuildingSaveData
         {
             public string buildingId;
@@ -47,6 +61,7 @@ namespace CaudilloBay.Core
             public int posZ;
             public float health;
             public List<InventorySaveData> inventory = new List<InventorySaveData>();
+            public string ownerCorporationName;
         }
 
         [System.Serializable]
@@ -92,6 +107,7 @@ namespace CaudilloBay.Core
             public List<string> unlockedAchievements = new List<string>();
             public List<ModifierSaveData> activeModifiers = new List<ModifierSaveData>();
             public List<Politics.SuperpowerType> alliances = new List<Politics.SuperpowerType>();
+            public List<CorporationSaveData> corporations = new List<CorporationSaveData>();
             public float crimeRate;
             public float educationLevel;
             public float healthLevel;
@@ -102,6 +118,10 @@ namespace CaudilloBay.Core
             public float blackMarketMoney;
             public Heir currentRuler;
             public List<Heir> heirs = new List<Heir>();
+            public float currentResearchPoints;
+            public string currentResearchId;
+            public float researchProgress;
+            public List<ResourceSaveData> abstractStockpiles = new List<ResourceSaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -230,6 +250,40 @@ namespace CaudilloBay.Core
                 data.heirs = new List<Heir>(DynastyManager.Instance.activeHeirs);
             }
 
+            if (TechnologyManager.Instance != null)
+            {
+                data.currentResearchPoints = TechnologyManager.Instance.currentResearchPoints;
+                data.researchProgress = TechnologyManager.Instance.researchProgress;
+                if (TechnologyManager.Instance.currentResearch != null)
+                    data.currentResearchId = TechnologyManager.Instance.currentResearch.techId;
+            }
+
+            if (StatsManager.Instance != null)
+            {
+                foreach (var kvp in StatsManager.Instance.GetAbstractStockpiles())
+                {
+                    data.abstractStockpiles.Add(new ResourceSaveData { resourceId = kvp.Key, amount = kvp.Value });
+                }
+            }
+
+            if (Economy.CorporationManager.Instance != null)
+            {
+                foreach (var corp in Economy.CorporationManager.Instance.corporations)
+                {
+                    data.corporations.Add(new CorporationSaveData {
+                        name = corp.corporationName,
+                        type = corp.type,
+                        industry = corp.industry,
+                        treasury = corp.treasury,
+                        shares = corp.totalShares,
+                        sharePrice = corp.sharePrice,
+                        stateOwn = corp.stateOwnershipPercent,
+                        privateOwn = corp.privateOwnershipPercent,
+                        foreignOwn = corp.foreignOwnershipPercent
+                    });
+                }
+            }
+
             if (StatsManager.Instance != null)
             {
                 foreach (var b in StatsManager.Instance.GetTrackedBuildings())
@@ -238,7 +292,8 @@ namespace CaudilloBay.Core
                         buildingId = b.buildingId,
                         posX = b.GridPosition.x,
                         posZ = b.GridPosition.z,
-                        health = b.currentHealth
+                        health = b.currentHealth,
+                        ownerCorporationName = b.ownerCorporation != null ? b.ownerCorporation.corporationName : ""
                     };
                     foreach (var resId in b.inventory.GetStoredResourceIds())
                     {
@@ -386,6 +441,41 @@ namespace CaudilloBay.Core
                 DynastyManager.Instance.activeHeirs = new List<Heir>(data.heirs);
             }
 
+            if (TechnologyManager.Instance != null)
+            {
+                TechnologyManager.Instance.currentResearchPoints = data.currentResearchPoints;
+                TechnologyManager.Instance.researchProgress = data.researchProgress;
+                if (!string.IsNullOrEmpty(data.currentResearchId))
+                {
+                    var tech = TechnologyManager.Instance.allTechnologies.Find(t => t.techId == data.currentResearchId);
+                    if (tech != null) TechnologyManager.Instance.currentResearch = tech;
+                }
+            }
+
+            if (StatsManager.Instance != null)
+            {
+                Dictionary<string, float> abstractS = new Dictionary<string, float>();
+                foreach (var rs in data.abstractStockpiles) abstractS.Add(rs.resourceId, rs.amount);
+                StatsManager.Instance.SetAbstractStockpiles(abstractS);
+            }
+
+            if (Economy.CorporationManager.Instance != null)
+            {
+                Economy.CorporationManager.Instance.corporations.Clear();
+                foreach (var cs in data.corporations)
+                {
+                    var corp = new Economy.Corporation(cs.name, cs.type, cs.industry) {
+                        treasury = cs.treasury,
+                        totalShares = cs.shares,
+                        sharePrice = cs.sharePrice,
+                        stateOwnershipPercent = cs.stateOwn,
+                        privateOwnershipPercent = cs.privateOwn,
+                        foreignOwnershipPercent = cs.foreignOwn
+                    };
+                    Economy.CorporationManager.Instance.corporations.Add(corp);
+                }
+            }
+
             // Restore buildings
             foreach (var bs in data.buildings)
             {
@@ -398,6 +488,15 @@ namespace CaudilloBay.Core
                     b.data = bData;
                     b.GridPosition = (bs.posX, bs.posZ);
                     b.currentHealth = bs.health;
+                    if (!string.IsNullOrEmpty(bs.ownerCorporationName) && Economy.CorporationManager.Instance != null)
+                    {
+                        var corp = Economy.CorporationManager.Instance.corporations.Find(c => c.corporationName == bs.ownerCorporationName);
+                        if (corp != null)
+                        {
+                            b.ownerCorporation = corp;
+                            corp.ownedBuildings.Add(b);
+                        }
+                    }
                     foreach (var invData in bs.inventory)
                     {
                         ResourceType rType = Resources.Load<ResourceType>($"Resources/{invData.resourceId}");

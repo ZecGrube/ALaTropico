@@ -49,6 +49,9 @@ namespace CaudilloBay.World
 
         private Dictionary<string, float> _abstractStockpiles = new Dictionary<string, float>();
 
+        public Dictionary<string, float> GetAbstractStockpiles() => _abstractStockpiles;
+        public void SetAbstractStockpiles(Dictionary<string, float> data) => _abstractStockpiles = data;
+
         public void AddResource(string resourceId, float amount)
         {
             if (_abstractStockpiles.ContainsKey(resourceId))

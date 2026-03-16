@@ -17,6 +17,7 @@ namespace CaudilloBay.Politics
         public int currentMandate = 20;
         public float monthlyMandateBase = 5f;
 
+        private bool isTickRunning = false;
         private float monthlyTimer = 0f;
         public float monthLength = 60f; // 1 minute = 1 month
 
@@ -38,6 +39,9 @@ namespace CaudilloBay.Politics
 
         private System.Collections.IEnumerator MonthlyTickCoroutine()
         {
+            if (isTickRunning) yield break;
+            isTickRunning = true;
+
             // Spread expensive calculations over multiple frames
             StatsManager.Instance.RefreshStats();
             yield return null;
@@ -87,6 +91,7 @@ namespace CaudilloBay.Politics
             if (Core.CampaignManager.Instance != null)
                 Core.CampaignManager.Instance.CheckObjectives();
 
+            isTickRunning = false;
             Debug.Log($"Monthly Political Update Complete: Mandate {currentMandate}");
         }
 
@@ -169,8 +174,22 @@ namespace CaudilloBay.Politics
             FactionData dataA = factions.Find(f => f.type == a);
             if (dataA != null)
             {
-                if (dataA.relations.ContainsKey(b)) dataA.relations[b] += delta;
-                else dataA.relations.Add(b, delta);
+                bool found = false;
+                for (int i = 0; i < dataA.relationsList.Count; i++)
+                {
+                    if (dataA.relationsList[i].faction == b)
+                    {
+                        var entry = dataA.relationsList[i];
+                        entry.value += delta;
+                        dataA.relationsList[i] = entry;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    dataA.relationsList.Add(new FactionData.RelationEntry { faction = b, value = delta });
+                }
             }
         }
 
@@ -184,6 +203,15 @@ namespace CaudilloBay.Politics
                     faction.loyalty = Mathf.Min(faction.loyalty + (amount / 100f), 100f);
                     Debug.Log($"Bribed {type} for ${amount}. New loyalty: {faction.loyalty}");
                 }
+            }
+        }
+
+        public void AddLoyalty(FactionType type, float delta)
+        {
+            var faction = factions.Find(f => f.type == type);
+            if (faction != null)
+            {
+                faction.loyalty = Mathf.Clamp(faction.loyalty + delta, 0, 100);
             }
         }
 
@@ -211,9 +239,9 @@ namespace CaudilloBay.Politics
             List<SaveSystem.RelationSaveData> list = new List<SaveSystem.RelationSaveData>();
             foreach (var f in factions)
             {
-                foreach (var rel in f.relations)
+                foreach (var rel in f.relationsList)
                 {
-                    list.Add(new SaveSystem.RelationSaveData { factionA = f.type, factionB = rel.Key, value = rel.Value });
+                    list.Add(new SaveSystem.RelationSaveData { factionA = f.type, factionB = rel.faction, value = rel.value });
                 }
             }
             return list;
@@ -226,8 +254,22 @@ namespace CaudilloBay.Politics
                 var f = factions.Find(x => x.type == d.factionA);
                 if (f != null)
                 {
-                    if (f.relations.ContainsKey(d.factionB)) f.relations[d.factionB] = d.value;
-                    else f.relations.Add(d.factionB, d.value);
+                    bool found = false;
+                    for (int i = 0; i < f.relationsList.Count; i++)
+                    {
+                        if (f.relationsList[i].faction == d.factionB)
+                        {
+                            var entry = f.relationsList[i];
+                            entry.value = d.value;
+                            f.relationsList[i] = entry;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        f.relationsList.Add(new FactionData.RelationEntry { faction = d.factionB, value = d.value });
+                    }
                 }
             }
         }
@@ -240,12 +282,16 @@ namespace CaudilloBay.Politics
 
             foreach (var h in DynastyManager.Instance.activeHeirs)
             {
-                if (h.factionSupport.TryGetValue(faction.type, out float support))
+                foreach (var entry in h.factionSupportList)
                 {
-                    if (support > maxSupport)
+                    if (entry.faction == faction.type)
                     {
-                        maxSupport = support;
-                        best = h;
+                        if (entry.value > maxSupport)
+                        {
+                            maxSupport = entry.value;
+                            best = h;
+                        }
+                        break;
                     }
                 }
             }

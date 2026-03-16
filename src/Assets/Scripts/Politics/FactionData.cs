@@ -17,8 +17,13 @@ namespace CaudilloBay.Politics
         public FactionLeader leader;
         public List<Demand> activeDemands = new List<Demand>();
 
-        // Key: FactionType, Value: Relation value (-100 to 100)
-        public Dictionary<FactionType, float> relations = new Dictionary<FactionType, float>();
+        [System.Serializable]
+        public struct RelationEntry
+        {
+            public FactionType faction;
+            public float value;
+        }
+        public List<RelationEntry> relationsList = new List<RelationEntry>();
 
         // Satisfaction from economic needs (0-100)
         public float needsSatisfaction = 50f;

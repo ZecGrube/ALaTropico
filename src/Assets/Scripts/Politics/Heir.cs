@@ -14,7 +14,14 @@ namespace CaudilloBay.Politics
         public float cruelty;
 
         public float loyaltyToRuler = 100f;
-        public Dictionary<FactionType, float> factionSupport = new Dictionary<FactionType, float>();
+
+        [System.Serializable]
+        public struct FactionSupportEntry
+        {
+            public FactionType faction;
+            public float value;
+        }
+        public List<FactionSupportEntry> factionSupportList = new List<FactionSupportEntry>();
 
         public void GenerateRandomStats()
         {
@@ -33,8 +40,22 @@ namespace CaudilloBay.Politics
                 if (f.type == FactionType.Capitalists) support += (intelligence * 0.2f);
                 if (f.type == FactionType.Nationalists) support += (military * 0.2f);
 
-                if (factionSupport.ContainsKey(f.type)) factionSupport[f.type] = support;
-                else factionSupport.Add(f.type, support);
+                bool found = false;
+                for (int i = 0; i < factionSupportList.Count; i++)
+                {
+                    if (factionSupportList[i].faction == f.type)
+                    {
+                        var entry = factionSupportList[i];
+                        entry.value = support;
+                        factionSupportList[i] = entry;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    factionSupportList.Add(new FactionSupportEntry { faction = f.type, value = support });
+                }
             }
         }
     }

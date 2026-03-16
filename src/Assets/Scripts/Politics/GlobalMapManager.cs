@@ -131,6 +131,12 @@ namespace CaudilloBay.Politics
                 {
                     DynastyManager.Instance.AddHeir("Consort from Abroad");
                 }
+
+                if (mission.template.title.Contains("Corporate") && Economy.CorporationManager.Instance != null)
+                {
+                    // Trigger corporate investment or foreign branch creation
+                    Economy.CorporationManager.Instance.CreateCorporation("Foreign Fruit Co", Economy.CorporationType.Foreign, Economy.IndustryType.Agriculture, new List<World.Building>());
+                }
             }
             else
             {
