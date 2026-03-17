@@ -127,6 +127,12 @@ namespace CaudilloBay.AI
             targetSatisfaction += (health - 50f);
             targetSatisfaction += Mathf.Log10(personalWealth + 1) * 10f;
 
+            // City Services factors
+            if (home != null)
+            {
+                targetSatisfaction -= home.garbageAccumulated * 2f; // Penalty for trash
+            }
+
             satisfaction = Mathf.Lerp(satisfaction, Mathf.Clamp(targetSatisfaction, 0, 100), 0.05f);
         }
 
@@ -160,7 +166,35 @@ namespace CaudilloBay.AI
             if (workplace == null) return;
             currentState = CitizenState.GoingToWork;
             agent.isStopped = false;
+
+            // Check if workplace is far and if there's a transport link
+            float distance = Vector3.Distance(transform.position, workplace.transform.position);
+            if (distance > 100f)
+            {
+                // Priority: use public transport if available
+                BusStop nearestStop = FindNearestBusStop();
+                if (nearestStop != null)
+                {
+                    Debug.Log($"Citizen {id} is taking the bus to work.");
+                    agent.SetDestination(nearestStop.transform.position);
+                    return;
+                }
+                Debug.Log($"Citizen {id} is commuting to a distant workplace (no transport).");
+            }
+
             agent.SetDestination(workplace.transform.position);
+        }
+
+        private BusStop FindNearestBusStop()
+        {
+            foreach (var b in StatsManager.Instance.GetTrackedBuildings())
+            {
+                if (b is BusStop && Vector3.Distance(transform.position, b.transform.position) < 50f)
+                {
+                    return (BusStop)b;
+                }
+            }
+            return null;
         }
 
         public void GoHome()

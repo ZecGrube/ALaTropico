@@ -117,7 +117,7 @@ namespace CaudilloBay.World
         private void ProduceOutputsWithEducation()
         {
             float healthMultiplier = 1.0f;
-            float employeeEfficiency = employees.Count > 0 ? (float)employees.Count / 10f : 1.0f; // Mock efficiency
+            float employeeEfficiency = employees.Count > 0 ? (float)employees.Count / 10f : 0f; // Mock efficiency
             if (Core.HealthManager.Instance != null)
             {
                 healthMultiplier = 0.5f + (Core.HealthManager.Instance.globalHealthLevel / 200f);

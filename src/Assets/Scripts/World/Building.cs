@@ -22,6 +22,8 @@ namespace CaudilloBay.World
         [Header("Economy")]
         public Inventory inventory = new Inventory();
         public Corporation ownerCorporation;
+        public float garbageAccumulated = 0f;
+        public float garbageOutput = 0.5f;
 
         // Convenience accessors
         public string buildingId => data.buildingId;

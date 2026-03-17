@@ -79,6 +79,7 @@ namespace CaudilloBay.Core
             public float health;
             public List<InventorySaveData> inventory = new List<InventorySaveData>();
             public string ownerCorporationName;
+            public float garbage;
         }
 
         [System.Serializable]
@@ -136,6 +137,7 @@ namespace CaudilloBay.Core
             public float blackMarketMoney;
             public Heir currentRuler;
             public List<Heir> heirs = new List<Heir>();
+            public float islandGarbage;
             public float religiousInfluence;
             public Politics.ReligiousLeader religiousLeader;
             public float cultLevel;
@@ -337,6 +339,11 @@ namespace CaudilloBay.Core
                 }
             }
 
+            if (Economy.WasteManager.Instance != null)
+            {
+                data.islandGarbage = Economy.WasteManager.Instance.totalGarbageOnIsland;
+            }
+
             if (StatsManager.Instance != null)
             {
                 foreach (var b in StatsManager.Instance.GetTrackedBuildings())
@@ -346,7 +353,8 @@ namespace CaudilloBay.Core
                         posX = b.GridPosition.x,
                         posZ = b.GridPosition.z,
                         health = b.currentHealth,
-                        ownerCorporationName = b.ownerCorporation != null ? b.ownerCorporation.corporationName : ""
+                        ownerCorporationName = b.ownerCorporation != null ? b.ownerCorporation.corporationName : "",
+                        garbage = b.garbageAccumulated
                     };
                     foreach (var resId in b.inventory.GetStoredResourceIds())
                     {
@@ -505,6 +513,11 @@ namespace CaudilloBay.Core
                 PersonalityCultManager.Instance.cultLevel = data.cultLevel;
             }
 
+            if (Economy.WasteManager.Instance != null)
+            {
+                Economy.WasteManager.Instance.totalGarbageOnIsland = data.islandGarbage;
+            }
+
             if (TechnologyManager.Instance != null)
             {
                 TechnologyManager.Instance.currentResearchPoints = data.currentResearchPoints;
@@ -551,7 +564,10 @@ namespace CaudilloBay.Core
                     Building b = go.GetComponent<Building>();
                     b.data = bData;
                     b.GridPosition = (bs.posX, bs.posZ);
+                    if (TileManager.Instance != null)
+                        TileManager.Instance.OccupyTile(new Vector2Int(bs.posX, bs.posZ), go);
                     b.currentHealth = bs.health;
+                    b.garbageAccumulated = bs.garbage;
                     if (!string.IsNullOrEmpty(bs.ownerCorporationName) && Economy.CorporationManager.Instance != null)
                     {
                         var corp = Economy.CorporationManager.Instance.corporations.Find(c => c.corporationName == bs.ownerCorporationName);
