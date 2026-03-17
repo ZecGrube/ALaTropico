@@ -116,5 +116,19 @@ namespace CaudilloBay.Politics
             heir.military = Mathf.Min(heir.military + 20f, 100f);
             Debug.Log($"{heir.name} graduated from the Military Academy.");
         }
+
+        public void TriggerSuccessionCrisis()
+        {
+            if (activeHeirs.Count < 2) return;
+
+            Debug.LogWarning("SUCCESSION CRISIS! Multiple heirs are fighting for the throne.");
+            // Logic to split faction loyalties between heirs
+        }
+
+        public void ArrangeMarriage(Heir heir, string foreignDignitary)
+        {
+            Debug.Log($"{heir.name} has married {foreignDignitary}. International relations improved!");
+            // Boost relations with specific neighbor or superpower
+        }
     }
 }

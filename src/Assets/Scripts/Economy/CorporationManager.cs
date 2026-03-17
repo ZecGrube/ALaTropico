@@ -104,5 +104,24 @@ namespace CaudilloBay.Economy
                 building.ownerCorporation = null;
             }
         }
+
+        public void OfferForeignInvestmentDeal()
+        {
+            Debug.Log("FOREIGN INVESTMENT OFFER: 'Global Fruit Inc' wants to build 3 new plantations for a fee of $10,000 and 10% tax break.");
+            // UI trigger for player choice
+        }
+
+        public void NationalizeCorporation(Corporation corp)
+        {
+            Debug.Log($"URGENT: El Presidente has nationalized {corp.name}!");
+            // Switch type - in real logic would match a specific enum
+            // corp.type = CorporationType.StateMonopoly;
+
+            // Relations with host country (if foreign) would plummet
+            if (Politics.GlobalMapManager.Instance != null)
+            {
+                // Find host superpower and reduce relations
+            }
+        }
     }
 }
