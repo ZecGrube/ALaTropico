@@ -28,6 +28,7 @@ namespace CaudilloBay.Economy
             float totalMaintenance = 0f;
             float totalIncomeTax = 0f;
             float totalUtilityMaintenance = 0f;
+            float totalSocialSecurity = 0f;
 
             if (AI.PopulationManager.Instance != null)
             {
@@ -35,9 +36,15 @@ namespace CaudilloBay.Economy
                 {
                     if (c.workplace != null)
                     {
-                        float tax = c.salary * 0.1f; // 10% flat PIT
-                        c.personalWealth -= tax;
+                        float taxRate = 0.1f;
+                        float ssRate = 0.05f;
+
+                        float tax = c.salary * taxRate;
+                        float ss = c.salary * ssRate;
+
+                        c.personalWealth -= (tax + ss);
                         totalIncomeTax += tax;
+                        totalSocialSecurity += ss;
                     }
                 }
             }
@@ -100,6 +107,8 @@ namespace CaudilloBay.Economy
             }
 
             treasuryBalance += (grossTax + totalCorporateTaxes + totalIncomeTax - corruptionLoss - totalMaintenance - totalUtilityMaintenance);
+            // Social Security goes to a separate fund (not implemented here but tracked)
+            Debug.Log($"Social Security collected: ${totalSocialSecurity}");
 
             if (CorporationManager.Instance != null)
                 CorporationManager.Instance.ProcessMonthlyFinances();

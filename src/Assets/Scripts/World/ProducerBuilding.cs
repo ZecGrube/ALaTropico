@@ -8,6 +8,7 @@ namespace CaudilloBay.World
     public class ProducerBuilding : Building, IProducer
     {
         public float productionRate = 1.0f;
+        public List<CaudilloBay.AI.JobPosition> vacancies = new List<CaudilloBay.AI.JobPosition>();
         public List<CaudilloBay.AI.Citizen> employees = new List<CaudilloBay.AI.Citizen>();
         private float currentCycleTimer = 0f;
 
@@ -110,8 +111,28 @@ namespace CaudilloBay.World
         public void ProduceCycle()
         {
             if (!CanProduce) return;
+
+            // Check for strike
+            bool onStrike = false;
+            foreach(var e in employees) if(e.unionMembership != null && e.unionMembership.isOnStrike) onStrike = true;
+            if(onStrike) return;
+
             ConsumeInputs();
             ProduceOutputsWithEducation();
+        }
+
+        public void PostVacancies()
+        {
+            if (vacancies.Count == 0)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    var vp = new CaudilloBay.AI.JobPosition("Worker", CaudilloBay.AI.EducationLevel.Basic, 50f, this);
+                    vacancies.Add(vp);
+                    if (CaudilloBay.AI.JobMarketManager.Instance != null)
+                        CaudilloBay.AI.JobMarketManager.Instance.RegisterVacancy(vp);
+                }
+            }
         }
 
         private void ProduceOutputsWithEducation()

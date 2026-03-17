@@ -62,6 +62,9 @@ namespace CaudilloBay.AI
         public float health = 100f;
         public float hunger = 0f;
         public float hungerRate = 0.1f;
+        public float salaryExpectation = 50f;
+        public float unemploymentDuration = 0f;
+        public Union unionMembership;
 
         [Header("Associations")]
         public ResidentialBuilding home;
@@ -107,6 +110,8 @@ namespace CaudilloBay.AI
         private void UpdateNeeds()
         {
             hunger += hungerRate * Time.deltaTime;
+            if (workplace == null) unemploymentDuration += Time.deltaTime / 30f; // Simplified month tracking
+            else unemploymentDuration = 0f;
 
             // Health decay with age
             if (age > 60) health -= 0.001f * Time.deltaTime;
