@@ -117,6 +117,15 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class DistrictSaveData
+        {
+            public string name;
+            public Color color;
+            public RectInt area;
+            public List<string> policyIds;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public GameMode mode;
@@ -157,6 +166,8 @@ namespace CaudilloBay.Core
             public float researchProgress;
             public List<ResourceSaveData> abstractStockpiles = new List<ResourceSaveData>();
             public List<ConnectionSaveData> utilityConnections = new List<ConnectionSaveData>();
+            public List<DistrictSaveData> districts = new List<DistrictSaveData>();
+            public List<string> constructedLandmarkIds = new List<string>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -354,6 +365,21 @@ namespace CaudilloBay.Core
             if (Economy.WasteManager.Instance != null)
             {
                 data.islandGarbage = Economy.WasteManager.Instance.totalGarbageOnIsland;
+            }
+
+            if (World.DistrictManager.Instance != null)
+            {
+                foreach (var d in World.DistrictManager.Instance.activeDistricts)
+                {
+                    var ds = new DistrictSaveData { name = d.districtName, color = d.districtColor, area = d.area, policyIds = new List<string>() };
+                    foreach (var p in d.activePolicies) ds.policyIds.Add(p.policyId);
+                    data.districts.Add(ds);
+                }
+            }
+
+            if (World.LandmarkManager.Instance != null)
+            {
+                foreach (var l in World.LandmarkManager.Instance.constructedLandmarks) data.constructedLandmarkIds.Add(l.landmarkUniqueId);
             }
 
             if (StatsManager.Instance != null)

@@ -99,7 +99,7 @@ namespace CaudilloBay.Core
                 if (globalCrimeRate > 40f)
                 {
                     // Capitalists and Nationalists dislike high crime
-                    Politics.FactionManager.Instance.ModifyRelations(Politics.FactionType.Capitalists, Politics.FactionType.Independent, -0.05f * (globalCrimeRate - 40f));
+                    // FactionManager.Instance.ModifyRelations(Politics.FactionType.Capitalists, Politics.FactionType.Nationalists, -0.05f * (globalCrimeRate - 40f));
                 }
             }
         }

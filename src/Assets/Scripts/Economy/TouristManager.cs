@@ -56,6 +56,18 @@ namespace CaudilloBay.Economy
                 safetyFactor = Mathf.Clamp01(1.0f - (Core.CrimeManager.Instance.globalCrimeRate / 100f));
             }
 
+            // Add District Attractiveness
+            if (World.DistrictManager.Instance != null)
+            {
+                foreach (var d in World.DistrictManager.Instance.activeDistricts)
+                {
+                    foreach (var p in d.activePolicies)
+                    {
+                        totalAttractiveness += p.attractivenessBonus;
+                    }
+                }
+            }
+
             // Advanced flow calculation
             float effectiveAttractiveness = (totalAttractiveness + activeEventBonus) * seasonalityFactor;
             float targetTourists = effectiveAttractiveness * safetyFactor * 10f;

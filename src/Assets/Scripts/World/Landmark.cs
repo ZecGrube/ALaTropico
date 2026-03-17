@@ -1,25 +1,38 @@
 using UnityEngine;
-using CaudilloBay.Core;
 
 namespace CaudilloBay.World
 {
     public class Landmark : Building
     {
-        [Header("Global Bonus")]
-        public float loyaltyBonus = 5f;
+        [Header("Landmark Properties")]
+        public string landmarkUniqueId;
+        public bool isUnique = true;
 
-        protected override void OnEnable()
+        [Header("Global Bonuses")]
+        public float globalTourismBonus = 0f;
+        public float globalPrestigeBonus = 0f;
+        public float globalStabilityBonus = 0f;
+
+        protected override void CompleteConstruction()
         {
-            base.OnEnable();
-            if (CultureManager.Instance != null)
-                CultureManager.Instance.RegisterBuilding(this);
+            base.CompleteConstruction();
+            ApplyGlobalBonuses();
+            Debug.Log($"Landmark {displayName} completed! Global bonuses applied.");
         }
 
-        protected override void OnDisable()
+        private void ApplyGlobalBonuses()
         {
-            base.OnDisable();
-            if (CultureManager.Instance != null)
-                CultureManager.Instance.UnregisterBuilding(this);
+            if (Economy.TouristManager.Instance != null)
+            {
+                Economy.TouristManager.Instance.activeEventBonus += globalTourismBonus;
+            }
+
+            if (Politics.LegitimacySystem.Instance != null)
+            {
+                Politics.LegitimacySystem.Instance.currentLegitimacy += globalPrestigeBonus;
+            }
+
+            // Add other global effects as needed
         }
     }
 }

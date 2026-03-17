@@ -19,6 +19,9 @@ namespace CaudilloBay.World
         public float currentHealth = 100f;
         public float maxHealth = 100f;
 
+        [Header("Districts")]
+        public District district;
+
         [Header("Utilities")]
         public bool requiresPower = false;
         public bool requiresWater = false;

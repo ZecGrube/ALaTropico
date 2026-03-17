@@ -156,6 +156,15 @@ namespace CaudilloBay.World
                 modifierMultiplier += Core.ModifierManager.Instance.GetTotalModifier(Data.ModifierType.ProductionEfficiency);
             }
 
+            // District Policy Multiplier
+            if (district != null)
+            {
+                foreach (var p in district.activePolicies)
+                {
+                    modifierMultiplier *= p.productionMultiplier;
+                }
+            }
+
             foreach (var output in data.production)
             {
                 inventory.AddResource(output.resourceType, output.amount * healthMultiplier * educationMultiplier * modifierMultiplier * employeeEfficiency);
