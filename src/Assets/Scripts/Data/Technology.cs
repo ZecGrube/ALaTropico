@@ -9,6 +9,7 @@ namespace CaudilloBay.Data
     {
         public string techId;
         public string techName;
+        public int requiredEraIndex = 0;
         [TextArea]
         public string description;
 

@@ -114,6 +114,9 @@ namespace CaudilloBay.World
             isConstructed = true;
             Debug.Log($"{displayName} construction complete!");
 
+            if (AI.QuestManager.Instance != null)
+                AI.QuestManager.Instance.NotifyProgress(Data.QuestType.BuildBuilding, buildingId);
+
             if (data.storageCapacity > 0)
             {
                 inventory.maxWeight = data.storageCapacity;

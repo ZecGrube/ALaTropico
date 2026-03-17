@@ -68,6 +68,10 @@ namespace CaudilloBay.World
         {
             if (researchedTechIds.Contains(tech.techId)) return false;
 
+            // Check Era
+            if (Core.EraManager.Instance != null && tech.requiredEraIndex > Core.EraManager.Instance.currentEra.eraIndex)
+                return false;
+
             foreach (var pre in tech.prerequisites)
             {
                 if (!researchedTechIds.Contains(pre.techId)) return false;
@@ -99,6 +103,10 @@ namespace CaudilloBay.World
         private void CompleteResearch(Technology tech)
         {
             researchedTechIds.Add(tech.techId);
+
+            // Notify Quests
+            if (AI.QuestManager.Instance != null)
+                AI.QuestManager.Instance.NotifyProgress(QuestType.ResearchTech, tech.techId);
             currentResearchPoints -= tech.researchCost;
             currentResearch = null;
             researchProgress = 0f;

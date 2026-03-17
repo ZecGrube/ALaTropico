@@ -38,6 +38,13 @@ namespace CaudilloBay.Construction
 
                 if (CanPlaceAt(gridPos, selectedBuildingData))
                 {
+                    // Check Era
+                    if (Core.EraManager.Instance != null && selectedBuildingData.requiredEraIndex > Core.EraManager.Instance.currentEra.eraIndex)
+                    {
+                        Debug.LogWarning("Building locked by Era!");
+                        return;
+                    }
+
                     if (!TechnologyManager.Instance.IsBuildingUnlocked(selectedBuildingData.buildingId))
                     {
                         Debug.LogWarning("Building locked by technology!");

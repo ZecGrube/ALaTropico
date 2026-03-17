@@ -54,5 +54,6 @@ namespace CaudilloBay.Data
     {
         public FactionType faction;
         public float effect;
+        public int requiredEraIndex = 0;
     }
 }

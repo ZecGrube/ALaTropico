@@ -134,6 +134,13 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class QuestSaveData
+        {
+            public string questId;
+            public int progress;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public GameMode mode;
@@ -177,6 +184,9 @@ namespace CaudilloBay.Core
             public List<DistrictSaveData> districts = new List<DistrictSaveData>();
             public List<string> constructedLandmarkIds = new List<string>();
             public List<GlobalEventSaveData> globalEvents = new List<GlobalEventSaveData>();
+            public int currentEraIndex;
+            public List<QuestSaveData> activeQuests = new List<QuestSaveData>();
+            public List<string> completedQuests = new List<string>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -397,6 +407,20 @@ namespace CaudilloBay.Core
                 {
                     data.globalEvents.Add(new GlobalEventSaveData { templateId = ev.templateId, countryName = ev.targetCountryName, remainingDuration = ev.remainingDuration });
                 }
+            }
+
+            if (EraManager.Instance != null)
+            {
+                data.currentEraIndex = EraManager.Instance.currentEra.eraIndex;
+            }
+
+            if (AI.QuestManager.Instance != null)
+            {
+                foreach (var q in AI.QuestManager.Instance.activeQuests)
+                {
+                    data.activeQuests.Add(new QuestSaveData { questId = q.template.questId, progress = q.currentProgress });
+                }
+                data.completedQuests = new List<string>(AI.QuestManager.Instance.completedQuestIds);
             }
 
             if (StatsManager.Instance != null)
