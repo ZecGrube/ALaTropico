@@ -29,6 +29,15 @@ namespace CaudilloBay.Politics
             UpdateMissions(Time.deltaTime);
         }
 
+        public void ProcessMonthlyGlobalState()
+        {
+            if (GlobalEventGenerator.Instance != null)
+                GlobalEventGenerator.Instance.MonthlyTick();
+
+            if (RegionalPoliticsManager.Instance != null)
+                RegionalPoliticsManager.Instance.UpdateMonthly();
+        }
+
         private void UpdateMissions(float deltaTime)
         {
             for (int i = activeMissions.Count - 1; i >= 0; i--)

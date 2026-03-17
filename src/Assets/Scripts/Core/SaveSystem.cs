@@ -126,6 +126,14 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class GlobalEventSaveData
+        {
+            public string templateId;
+            public string countryName;
+            public float remainingDuration;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public GameMode mode;
@@ -168,6 +176,7 @@ namespace CaudilloBay.Core
             public List<ConnectionSaveData> utilityConnections = new List<ConnectionSaveData>();
             public List<DistrictSaveData> districts = new List<DistrictSaveData>();
             public List<string> constructedLandmarkIds = new List<string>();
+            public List<GlobalEventSaveData> globalEvents = new List<GlobalEventSaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -380,6 +389,14 @@ namespace CaudilloBay.Core
             if (World.LandmarkManager.Instance != null)
             {
                 foreach (var l in World.LandmarkManager.Instance.constructedLandmarks) data.constructedLandmarkIds.Add(l.landmarkUniqueId);
+            }
+
+            if (GlobalEventGenerator.Instance != null)
+            {
+                foreach (var ev in GlobalEventGenerator.Instance.activeEvents)
+                {
+                    data.globalEvents.Add(new GlobalEventSaveData { templateId = ev.templateId, countryName = ev.targetCountryName, remainingDuration = ev.remainingDuration });
+                }
             }
 
             if (StatsManager.Instance != null)

@@ -158,7 +158,10 @@ namespace CaudilloBay.AI
             if (currentTarget == null) return true;
             foreach (var cost in currentTarget.buildCosts)
             {
-                if (localInventory.GetAmount(cost.resourceType) < cost.amount) return false;
+                // Builder only needs SOME progress-worth of resources to continue building
+                // If the total cost is 100 but builder capacity is 20, they should build in chunks.
+                float requiredForChunk = Mathf.Min(cost.amount * 0.1f, 1f); // 10% or at least 1 unit
+                if (localInventory.GetAmount(cost.resourceType) < requiredForChunk) return false;
             }
             return true;
         }
@@ -169,14 +172,20 @@ namespace CaudilloBay.AI
 
             foreach (var cost in currentTarget.buildCosts)
             {
-                float needed = cost.amount - localInventory.GetAmount(cost.resourceType);
-                if (needed > 0)
+                float neededTotal = cost.amount;
+                float currentInHand = localInventory.GetAmount(cost.resourceType);
+
+                // Only take what we can carry (maxWeight limit of localInventory)
+                float spaceAvailable = localInventory.maxWeight - localInventory.GetTotalWeight();
+                float amountToTake = Mathf.Min(neededTotal - currentInHand, spaceAvailable);
+
+                if (amountToTake > 0)
                 {
-                    nearestStorage.inventory.TransferTo(localInventory, cost.resourceType, needed);
+                    nearestStorage.inventory.TransferTo(localInventory, cost.resourceType, amountToTake);
                 }
             }
 #if UNITY_EDITOR
-            Debug.Log($"Builder collected resources from storage for {currentTarget.displayName}.");
+            Debug.Log($"Builder collected resources from storage for {currentTarget.displayName}. Hand: {localInventory.GetTotalWeight()}");
 #endif
         }
 
