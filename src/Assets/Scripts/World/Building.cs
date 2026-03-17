@@ -19,6 +19,12 @@ namespace CaudilloBay.World
         public float currentHealth = 100f;
         public float maxHealth = 100f;
 
+        [Header("Utilities")]
+        public bool requiresPower = false;
+        public bool requiresWater = false;
+        public Systems.UtilityNode powerNode;
+        public Systems.UtilityNode waterNode;
+
         [Header("Economy")]
         public Inventory inventory = new Inventory();
         public Corporation ownerCorporation;
@@ -82,7 +88,14 @@ namespace CaudilloBay.World
             Debug.Log($"{displayName} repaired {amount}. Health: {currentHealth}");
         }
 
-        public bool IsFunctional() => isConstructed && currentHealth > 0;
+        public bool IsFunctional()
+        {
+            bool utilitiesSatisfied = true;
+            if (requiresPower && (powerNode == null || !powerNode.isSatisfied)) utilitiesSatisfied = false;
+            if (requiresWater && (waterNode == null || !waterNode.isSatisfied)) utilitiesSatisfied = false;
+
+            return isConstructed && currentHealth > 0 && utilitiesSatisfied;
+        }
 
         public bool AreMaterialsProvided()
         {

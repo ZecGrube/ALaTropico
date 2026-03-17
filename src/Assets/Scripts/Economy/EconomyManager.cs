@@ -27,6 +27,7 @@ namespace CaudilloBay.Economy
         {
             float totalMaintenance = 0f;
             float totalIncomeTax = 0f;
+            float totalUtilityMaintenance = 0f;
 
             if (AI.PopulationManager.Instance != null)
             {
@@ -91,7 +92,14 @@ namespace CaudilloBay.Economy
                 Core.CorruptionManager.Instance.AddBlackMarketMoney(corruptionLoss * 0.5f); // 50% of corruption loss goes to player shadow funds
             }
 
-            treasuryBalance += (grossTax + totalCorporateTaxes + totalIncomeTax - corruptionLoss - totalMaintenance);
+            // Add Utility Maintenance
+            if (Systems.PowerGridManager.Instance != null || Systems.WaterNetworkManager.Instance != null)
+            {
+                // Simple placeholder for utility infrastructure upkeep
+                totalUtilityMaintenance = buildings.Count * 10f;
+            }
+
+            treasuryBalance += (grossTax + totalCorporateTaxes + totalIncomeTax - corruptionLoss - totalMaintenance - totalUtilityMaintenance);
 
             if (CorporationManager.Instance != null)
                 CorporationManager.Instance.ProcessMonthlyFinances();

@@ -80,6 +80,12 @@ namespace CaudilloBay.Core
             if (FactionManager.Instance != null)
                 FactionManager.Instance.currentMandate += choice.mandateChange;
 
+            // Handle Utility Accidents
+            if (choice.title.Contains("Repair") && Systems.PowerGridManager.Instance != null)
+            {
+                Debug.Log("Infrastructure repaired through event choice.");
+            }
+
             if (World.StatsManager.Instance != null)
             {
                 foreach (var rc in choice.resourceChanges)

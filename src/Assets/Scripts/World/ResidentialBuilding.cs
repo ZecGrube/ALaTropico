@@ -48,6 +48,10 @@ namespace CaudilloBay.World
                 targetHappiness += (CaudilloBay.Core.HealthManager.Instance.globalHealthLevel - 50f);
             }
 
+            // Utilities satisfaction
+            if (requiresPower && (powerNode == null || !powerNode.isSatisfied)) targetHappiness -= 30f;
+            if (requiresWater && (waterNode == null || !waterNode.isSatisfied)) targetHappiness -= 30f;
+
             currentHappiness = Mathf.MoveTowards(currentHappiness, Mathf.Clamp(targetHappiness, 0, 100), 5f);
 
             return currentHappiness;

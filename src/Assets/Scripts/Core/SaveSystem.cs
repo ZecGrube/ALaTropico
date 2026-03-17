@@ -80,6 +80,17 @@ namespace CaudilloBay.Core
             public List<InventorySaveData> inventory = new List<InventorySaveData>();
             public string ownerCorporationName;
             public float garbage;
+            public bool requiresPower;
+            public bool requiresWater;
+        }
+
+        [System.Serializable]
+        public class ConnectionSaveData
+        {
+            public int nodeA_x, nodeA_z;
+            public int nodeB_x, nodeB_z;
+            public Systems.ConnectionType type;
+            public bool isBroken;
         }
 
         [System.Serializable]
@@ -145,6 +156,7 @@ namespace CaudilloBay.Core
             public string currentResearchId;
             public float researchProgress;
             public List<ResourceSaveData> abstractStockpiles = new List<ResourceSaveData>();
+            public List<ConnectionSaveData> utilityConnections = new List<ConnectionSaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
