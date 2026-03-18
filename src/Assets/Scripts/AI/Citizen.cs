@@ -45,6 +45,7 @@ namespace CaudilloBay.AI
         [Header("Socio-Economics")]
         public SocialClass socialClass = SocialClass.WorkingClass;
         public EducationLevel education = EducationLevel.Basic;
+        public float educationLevel = 0f; // 0-100 numerical value
         public float personalWealth = 100f;
         public float salary = 50f;
 

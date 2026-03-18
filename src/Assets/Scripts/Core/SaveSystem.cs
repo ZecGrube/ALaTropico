@@ -141,6 +141,15 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class OffshoreSaveData
+        {
+            public string resourceId;
+            public Vector2 pos;
+            public float qty;
+            public bool isDiscovered;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public GameMode mode;
@@ -187,6 +196,7 @@ namespace CaudilloBay.Core
             public int currentEraIndex;
             public List<QuestSaveData> activeQuests = new List<QuestSaveData>();
             public List<string> completedQuests = new List<string>();
+            public List<OffshoreSaveData> offshoreDeposits = new List<OffshoreSaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -332,6 +342,14 @@ namespace CaudilloBay.Core
                 data.researchProgress = TechnologyManager.Instance.researchProgress;
                 if (TechnologyManager.Instance.currentResearch != null)
                     data.currentResearchId = TechnologyManager.Instance.currentResearch.techId;
+            }
+
+            if (OffshoreManager.Instance != null)
+            {
+                foreach (var dep in OffshoreManager.Instance.allDeposits)
+                {
+                    data.offshoreDeposits.Add(new OffshoreSaveData { resourceId = dep.resourceId, pos = dep.position, qty = dep.quantity, isDiscovered = dep.isDiscovered });
+                }
             }
 
             if (StatsManager.Instance != null)
