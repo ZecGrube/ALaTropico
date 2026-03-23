@@ -22,6 +22,8 @@ namespace CaudilloBay.Systems
         [HideInInspector]
         public int networkId = -1;
 
+        public float providedAmount = 0f;
+
         public virtual void Register()
         {
             if (utilityType == UtilityType.Power) PowerGridManager.Instance.RegisterNode(this);

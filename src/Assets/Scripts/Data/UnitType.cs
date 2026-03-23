@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CaudilloBay.Data
 {
-    public enum FormationType { Line, Column, Square, Skirmish }
+    public enum FormationType { Line, Column, Square, Skirmish, Strategic }
 
     [CreateAssetMenu(fileName = "NewUnitType", menuName = "CaudilloBay/Military/UnitType")]
     public class UnitType : ScriptableObject

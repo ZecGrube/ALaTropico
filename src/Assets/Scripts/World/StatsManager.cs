@@ -111,5 +111,20 @@ namespace CaudilloBay.World
         {
             return _trackedBuildings;
         }
+
+        public List<Building> GetBuildingsInRange(Vector2 center, float radius)
+        {
+            List<Building> results = new List<Building>();
+            foreach (var b in _trackedBuildings)
+            {
+                if (b == null) continue;
+                float dist = Vector2.Distance(center, new Vector2(b.transform.position.x, b.transform.position.z));
+                if (dist <= radius)
+                {
+                    results.Add(b);
+                }
+            }
+            return results;
+        }
     }
 }

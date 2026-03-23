@@ -119,7 +119,7 @@ namespace CaudilloBay.Systems
 
             foreach (var node in nodes)
             {
-                if (node.nodeType == UtilityNodeType.Producer) totalSupply += node.capacity;
+                if (node.nodeType == UtilityNodeType.Producer) totalSupply += node.capacity + node.providedAmount;
                 else if (node.nodeType == UtilityNodeType.Consumer) totalDemand += node.demand;
                 else if (node.nodeType == UtilityNodeType.Storage) totalSupply += node.currentStorage;
             }

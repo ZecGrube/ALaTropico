@@ -176,6 +176,23 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class NuclearWarheadSaveData
+        {
+            public string id;
+            public string name;
+            public float yield;
+            public float reliability;
+        }
+
+        [System.Serializable]
+        public class RadiationZoneSaveData
+        {
+            public Vector2 center;
+            public float radius;
+            public float intensity;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public GameMode mode;
@@ -227,6 +244,12 @@ namespace CaudilloBay.Core
             public List<string> joinedOrgIds = new List<string>();
             public List<SpyNetworkSaveData> spyNetworks = new List<SpyNetworkSaveData>();
             public List<AllianceSaveData> customAlliances = new List<AllianceSaveData>();
+            public bool npt;
+            public bool start;
+            public bool ctbt;
+            public float nuclearTension;
+            public List<NuclearWarheadSaveData> arsenal = new List<NuclearWarheadSaveData>();
+            public List<RadiationZoneSaveData> radiationZones = new List<RadiationZoneSaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -410,6 +433,20 @@ namespace CaudilloBay.Core
                     data.customAlliances.Add(asd);
                 }
             }
+
+            if (Systems.Nuclear.NuclearManager.Instance != null)
+            {
+                data.npt = Systems.Nuclear.NuclearManager.Instance.hasNPT;
+                data.start = Systems.Nuclear.NuclearManager.Instance.hasSTART;
+                data.ctbt = Systems.Nuclear.NuclearManager.Instance.hasCTBT;
+                data.nuclearTension = Systems.Nuclear.NuclearManager.Instance.nuclearTension;
+                foreach (var w in Systems.Nuclear.NuclearManager.Instance.arsenal)
+                    data.arsenal.Add(new NuclearWarheadSaveData { id = w.warheadId, name = w.warheadName, yield = w.yieldMT, reliability = w.reliability });
+            }
+
+            var rads = FindObjectsByType<Systems.Nuclear.RadiationZone>(FindObjectsSortMode.None);
+            foreach (var r in rads)
+                data.radiationZones.Add(new RadiationZoneSaveData { center = r.center, radius = r.radius, intensity = r.intensity });
 
             if (StatsManager.Instance != null)
             {
@@ -690,6 +727,27 @@ namespace CaudilloBay.Core
                 Dictionary<string, float> abstractS = new Dictionary<string, float>();
                 foreach (var rs in data.abstractStockpiles) abstractS.Add(rs.resourceId, rs.amount);
                 StatsManager.Instance.SetAbstractStockpiles(abstractS);
+            }
+
+            if (Systems.Nuclear.NuclearManager.Instance != null)
+            {
+                Systems.Nuclear.NuclearManager.Instance.hasNPT = data.npt;
+                Systems.Nuclear.NuclearManager.Instance.hasSTART = data.start;
+                Systems.Nuclear.NuclearManager.Instance.hasCTBT = data.ctbt;
+                Systems.Nuclear.NuclearManager.Instance.nuclearTension = data.nuclearTension;
+                Systems.Nuclear.NuclearManager.Instance.arsenal.Clear();
+                foreach (var wsd in data.arsenal)
+                    Systems.Nuclear.NuclearManager.Instance.arsenal.Add(new Systems.Nuclear.NuclearWarhead { warheadId = wsd.id, warheadName = wsd.name, yieldMT = wsd.yield, reliability = wsd.reliability });
+            }
+
+            foreach (var rzd in data.radiationZones)
+            {
+                GameObject radObj = new GameObject("RadiationZone");
+                radObj.transform.position = new Vector3(rzd.center.x, 0, rzd.center.y);
+                var zone = radObj.AddComponent<Systems.Nuclear.RadiationZone>();
+                zone.center = rzd.center;
+                zone.radius = rzd.radius;
+                zone.intensity = rzd.intensity;
             }
 
             if (Economy.CorporationManager.Instance != null)
