@@ -150,6 +150,16 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class ArmySaveData
+        {
+            public string name;
+            public Data.FormationType formation;
+            public Vector2 pos;
+            public float supply;
+            public bool isHostile;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public GameMode mode;
@@ -197,6 +207,7 @@ namespace CaudilloBay.Core
             public List<QuestSaveData> activeQuests = new List<QuestSaveData>();
             public List<string> completedQuests = new List<string>();
             public List<OffshoreSaveData> offshoreDeposits = new List<OffshoreSaveData>();
+            public List<ArmySaveData> armies = new List<ArmySaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -349,6 +360,14 @@ namespace CaudilloBay.Core
                 foreach (var dep in OffshoreManager.Instance.allDeposits)
                 {
                     data.offshoreDeposits.Add(new OffshoreSaveData { resourceId = dep.resourceId, pos = dep.position, qty = dep.quantity, isDiscovered = dep.isDiscovered });
+                }
+            }
+
+            if (MilitaryManager.Instance != null)
+            {
+                foreach (var army in MilitaryManager.Instance.activeArmies)
+                {
+                    data.armies.Add(new ArmySaveData { name = army.armyName, formation = army.currentFormation, pos = army.gridPosition, supply = army.supplyLevel, isHostile = army.isHostile });
                 }
             }
 
