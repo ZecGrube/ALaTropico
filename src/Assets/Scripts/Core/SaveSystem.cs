@@ -160,6 +160,22 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class SpyNetworkSaveData
+        {
+            public string countryName;
+            public float strength;
+        }
+
+        [System.Serializable]
+        public class AllianceSaveData
+        {
+            public string name;
+            public Politics.AllianceType type;
+            public List<string> memberNames;
+            public float cohesion;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public GameMode mode;
@@ -208,6 +224,9 @@ namespace CaudilloBay.Core
             public List<string> completedQuests = new List<string>();
             public List<OffshoreSaveData> offshoreDeposits = new List<OffshoreSaveData>();
             public List<ArmySaveData> armies = new List<ArmySaveData>();
+            public List<string> joinedOrgIds = new List<string>();
+            public List<SpyNetworkSaveData> spyNetworks = new List<SpyNetworkSaveData>();
+            public List<AllianceSaveData> customAlliances = new List<AllianceSaveData>();
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -368,6 +387,27 @@ namespace CaudilloBay.Core
                 foreach (var army in MilitaryManager.Instance.activeArmies)
                 {
                     data.armies.Add(new ArmySaveData { name = army.armyName, formation = army.currentFormation, pos = army.gridPosition, supply = army.supplyLevel, isHostile = army.isHostile });
+                }
+            }
+
+            if (OrganizationManager.Instance != null)
+            {
+                foreach (var org in OrganizationManager.Instance.activeMemberships) data.joinedOrgIds.Add(org.orgId);
+            }
+
+            if (SpyNetworkManager.Instance != null)
+            {
+                foreach (var net in SpyNetworkManager.Instance.networks)
+                    data.spyNetworks.Add(new SpyNetworkSaveData { countryName = net.countryName, strength = net.networkStrength });
+            }
+
+            if (AllianceManager.Instance != null)
+            {
+                foreach (var alliance in AllianceManager.Instance.activeAlliances)
+                {
+                    var asd = new AllianceSaveData { name = alliance.allianceName, type = alliance.type, cohesion = alliance.cohesion, memberNames = new List<string>() };
+                    foreach (var member in alliance.neighborMembers) asd.memberNames.Add(member.stateName);
+                    data.customAlliances.Add(asd);
                 }
             }
 

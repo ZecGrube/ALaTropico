@@ -40,6 +40,7 @@ namespace CaudilloBay.Data
 
         [Header("Flags")]
         public bool isDecoration;
+        public int requiredEraIndex = 0;
     }
 
     [System.Serializable]
@@ -54,6 +55,5 @@ namespace CaudilloBay.Data
     {
         public FactionType faction;
         public float effect;
-        public int requiredEraIndex = 0;
     }
 }

@@ -13,6 +13,9 @@ namespace CaudilloBay.Data
         public List<Politics.SuperpowerType> members = new List<Politics.SuperpowerType>();
 
         public float legitimacyThreshold = 40f;
+        public float yearlyDues = 1000f;
+
         public List<ModifierData> membershipBonuses = new List<ModifierData>();
+        public List<string> specificDemands = new List<string>(); // e.g. "NoDeathPenalty"
     }
 }

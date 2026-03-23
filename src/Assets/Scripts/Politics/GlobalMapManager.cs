@@ -36,6 +36,16 @@ namespace CaudilloBay.Politics
 
             if (RegionalPoliticsManager.Instance != null)
                 RegionalPoliticsManager.Instance.UpdateMonthly();
+
+            if (AllianceManager.Instance != null)
+                AllianceManager.Instance.MonthlyUpdate();
+
+            if (SpyNetworkManager.Instance != null)
+                SpyNetworkManager.Instance.UpdateMonthly();
+
+            // Organizations dues checked monthly
+            if (OrganizationManager.Instance != null)
+                OrganizationManager.Instance.ProcessYearlyDues(); // Simplified: check monthly or handle counter
         }
 
         private void UpdateMissions(float deltaTime)
