@@ -193,6 +193,21 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class SatelliteSaveData
+        {
+            public string satelliteId;
+            public bool isActive;
+        }
+
+        [System.Serializable]
+        public class SpaceMissionSaveData
+        {
+            public string templateId;
+            public float progress;
+            public bool launched;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public GameMode mode;
@@ -256,6 +271,10 @@ namespace CaudilloBay.Core
             public bool isWorldLeader;
             public float yearsOfPeace;
             public bool hasWon;
+            public List<SatelliteSaveData> satellites = new List<SatelliteSaveData>();
+            public List<SpaceMissionSaveData> spaceMissions = new List<SpaceMissionSaveData>();
+            public float usaSpaceProgress;
+            public float ussrSpaceProgress;
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -464,6 +483,21 @@ namespace CaudilloBay.Core
             }
 
             if (GameStateManager.Instance != null) data.hasWon = GameStateManager.Instance.hasWon;
+
+            if (Systems.Space.SpaceMissionManager.Instance != null)
+            {
+                foreach (var s in Systems.Space.SpaceMissionManager.Instance.launchedSatellites)
+                    data.satellites.Add(new SatelliteSaveData { satelliteId = s.satelliteId, isActive = true });
+
+                foreach (var m in Systems.Space.SpaceMissionManager.Instance.activeMissions)
+                    data.spaceMissions.Add(new SpaceMissionSaveData { templateId = m.template.missionId, progress = m.currentProgress, launched = m.isLaunched });
+            }
+
+            if (Systems.Space.SpaceRaceManager.Instance != null)
+            {
+                data.usaSpaceProgress = Systems.Space.SpaceRaceManager.Instance.usaProgress;
+                data.ussrSpaceProgress = Systems.Space.SpaceRaceManager.Instance.ussrProgress;
+            }
 
             if (StatsManager.Instance != null)
             {
@@ -777,6 +811,29 @@ namespace CaudilloBay.Core
             }
 
             if (GameStateManager.Instance != null) GameStateManager.Instance.hasWon = data.hasWon;
+
+            if (Systems.Space.SpaceMissionManager.Instance != null)
+            {
+                Systems.Space.SpaceMissionManager.Instance.launchedSatellites.Clear();
+                foreach (var ssd in data.satellites)
+                {
+                    Data.SatelliteTemplate template = Resources.Load<Data.SatelliteTemplate>($"Space/Satellites/{ssd.satelliteId}");
+                    if (template != null) Systems.Space.SpaceMissionManager.Instance.launchedSatellites.Add(template);
+                }
+
+                Systems.Space.SpaceMissionManager.Instance.activeMissions.Clear();
+                foreach (var msd in data.spaceMissions)
+                {
+                    Data.SpaceMissionTemplate template = Resources.Load<Data.SpaceMissionTemplate>($"Space/Missions/{msd.templateId}");
+                    if (template != null) Systems.Space.SpaceMissionManager.Instance.activeMissions.Add(new Data.SpaceMissionInstance { template = template, currentProgress = msd.progress, isLaunched = msd.launched });
+                }
+            }
+
+            if (Systems.Space.SpaceRaceManager.Instance != null)
+            {
+                Systems.Space.SpaceRaceManager.Instance.usaProgress = data.usaSpaceProgress;
+                Systems.Space.SpaceRaceManager.Instance.ussrProgress = data.ussrSpaceProgress;
+            }
 
             if (Economy.CorporationManager.Instance != null)
             {
