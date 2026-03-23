@@ -23,6 +23,24 @@ namespace CaudilloBay.Economy
             treasuryBalance += amount;
         }
 
+        public float GetGDP()
+        {
+            // Simple GDP formula: (Treasury + Corporate Profits + Total Population Wealth) / 100
+            float totalPopWealth = 0f;
+            if (AI.PopulationManager.Instance != null)
+            {
+                foreach (var c in AI.PopulationManager.Instance.allCitizens) totalPopWealth += c.personalWealth;
+            }
+
+            float totalCorpTreasury = 0f;
+            if (CorporationManager.Instance != null)
+            {
+                foreach (var corp in CorporationManager.Instance.corporations) totalCorpTreasury += corp.treasury;
+            }
+
+            return (treasuryBalance + totalPopWealth + totalCorpTreasury) / 100f;
+        }
+
         public void ProcessMonthlyEconomy(List<Building> buildings)
         {
             float totalMaintenance = 0f;

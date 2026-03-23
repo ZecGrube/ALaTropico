@@ -16,6 +16,10 @@ namespace CaudilloBay.Politics
         public List<Data.Sanction> activeSanctions = new List<Data.Sanction>();
         public List<SuperpowerType> alliedSuperpowers = new List<SuperpowerType>();
 
+        [Header("Global Resolutions")]
+        public List<Data.ResolutionTemplate> allResolutions = new List<Data.ResolutionTemplate>();
+        public List<Data.ResolutionInstance> activeResolutions = new List<Data.ResolutionInstance>();
+
         private void Awake()
         {
             if (Instance == null) Instance = this;
@@ -209,6 +213,68 @@ namespace CaudilloBay.Politics
                     bg.stealth = d.stealth;
                     bg.combat = d.combat;
                     bg.currentMissionIndex = d.missionIndex;
+                }
+            }
+        }
+
+        public void ProposeResolution(Data.ResolutionTemplate template)
+        {
+            if (activeResolutions.Exists(r => r.template.resolutionId == template.resolutionId)) return;
+
+            if (Core.GlobalInfluenceManager.Instance != null && Core.GlobalInfluenceManager.Instance.globalInfluence >= template.influenceCostToPropose)
+            {
+                Core.GlobalInfluenceManager.Instance.globalInfluence -= template.influenceCostToPropose;
+                activeResolutions.Add(new Data.ResolutionInstance { template = template, votingEndsInMonths = 3f });
+                Debug.Log($"[GlobalMapManager] Resolution proposed: {template.resolutionName}");
+            }
+        }
+
+        public void HostSummit()
+        {
+            if (Core.GlobalInfluenceManager.Instance == null) return;
+
+            if (Core.GlobalInfluenceManager.Instance.internationalPrestige >= 70f && Economy.EconomyManager.Instance.treasuryBalance >= 10000f)
+            {
+                Economy.EconomyManager.Instance.AddFunds(-10000f);
+                Core.GlobalInfluenceManager.Instance.AddPrestige(20f);
+                Core.GlobalInfluenceManager.Instance.globalInfluence += 100f;
+                Debug.Log("[GlobalMapManager] Global Summit hosted successfully! World leaders are impressed.");
+            }
+        }
+
+        public void ConductGlobalVoting()
+        {
+            for (int i = activeResolutions.Count - 1; i >= 0; i--)
+            {
+                var res = activeResolutions[i];
+                res.votingEndsInMonths -= 1f;
+                if (res.votingEndsInMonths <= 0)
+                {
+                    // Calculate vote result
+                    float forPercent = res.template.baseSupport;
+
+                    // Add player influence
+                    if (Core.GlobalInfluenceManager.Instance != null)
+                        forPercent += (Core.GlobalInfluenceManager.Instance.globalInfluence / 10f);
+
+                    // Alliance support
+                    forPercent += alliedSuperpowers.Count * 10f;
+
+                    if (forPercent >= res.template.requiredVotes)
+                    {
+                        res.isPassed = true;
+                        Debug.Log($"[GlobalMapManager] Resolution passed: {res.template.resolutionName}");
+                        foreach (var mod in res.template.activeModifiers)
+                        {
+                            if (Core.ModifierManager.Instance != null)
+                                Core.ModifierManager.Instance.ApplyModifier(mod, 48); // 4 years
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log($"[GlobalMapManager] Resolution rejected: {res.template.resolutionName}");
+                    }
+                    activeResolutions.RemoveAt(i);
                 }
             }
         }

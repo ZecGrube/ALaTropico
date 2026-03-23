@@ -20,6 +20,7 @@ namespace CaudilloBay.Core
         public GameMode currentMode = GameMode.Sandbox;
         public CampaignMission activeMission;
         public SandboxSettings sandboxSettings;
+        public bool hasWon = false;
 
         private void Awake()
         {
@@ -62,6 +63,34 @@ namespace CaudilloBay.Core
         public void LoadExistingGame(string saveFile)
         {
             StartCoroutine(LoadAndSetupGame(false, saveFile));
+        }
+
+        public void CheckVictoryConditions()
+        {
+            if (hasWon) return;
+
+            if (GlobalInfluenceManager.Instance != null)
+            {
+                var influence = GlobalInfluenceManager.Instance;
+
+                // Diplomatic Victory Thresholds
+                bool influenceGoal = influence.globalInfluence >= 800f;
+                bool prestigeGoal = influence.internationalPrestige >= 80f;
+                bool crisisGoal = influence.crisesSolved >= 3;
+                bool peaceGoal = influence.yearsOfPeace >= 10f;
+
+                if (influenceGoal && prestigeGoal && crisisGoal && peaceGoal)
+                {
+                    TriggerVictory("Diplomatic Victory: You have been recognized as a global leader.");
+                }
+            }
+        }
+
+        private void TriggerVictory(string message)
+        {
+            hasWon = true;
+            Debug.Log($"VICTORY! {message}");
+            // Show victory UI screen
         }
 
         private IEnumerator LoadAndSetupGame(bool generateNewIsland, string saveFile = "")

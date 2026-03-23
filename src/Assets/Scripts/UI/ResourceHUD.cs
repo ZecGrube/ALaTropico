@@ -63,7 +63,13 @@ namespace CaudilloBay.UI
                 nuclearInfo = $" | TENSION: {CaudilloBay.Systems.Nuclear.NuclearManager.Instance.nuclearTension:F1} | DET: {CaudilloBay.Systems.Nuclear.NuclearManager.Instance.currentDeterrence:F0}";
             }
 
-            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}{educationInfo}{healthInfo}{militaryInfo}{cultureInfo}{corruptionInfo}{nuclearInfo}";
+            string influenceInfo = "";
+            if (CaudilloBay.Core.GlobalInfluenceManager.Instance != null)
+            {
+                influenceInfo = $" | INF: {CaudilloBay.Core.GlobalInfluenceManager.Instance.globalInfluence:F0}/1000 | PRE: {CaudilloBay.Core.GlobalInfluenceManager.Instance.internationalPrestige:F0}";
+            }
+
+            resourceText.text = $"Storage: {mainStorage.inventory.GetTotalWeight()} / {mainStorage.storageCapacity}{crimeInfo}{educationInfo}{healthInfo}{militaryInfo}{cultureInfo}{corruptionInfo}{nuclearInfo}{influenceInfo}";
         }
     }
 }

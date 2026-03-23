@@ -250,6 +250,12 @@ namespace CaudilloBay.Core
             public float nuclearTension;
             public List<NuclearWarheadSaveData> arsenal = new List<NuclearWarheadSaveData>();
             public List<RadiationZoneSaveData> radiationZones = new List<RadiationZoneSaveData>();
+            public float globalInfluence;
+            public float internationalPrestige;
+            public int crisesSolved;
+            public bool isWorldLeader;
+            public float yearsOfPeace;
+            public bool hasWon;
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -447,6 +453,17 @@ namespace CaudilloBay.Core
             var rads = FindObjectsByType<Systems.Nuclear.RadiationZone>(FindObjectsSortMode.None);
             foreach (var r in rads)
                 data.radiationZones.Add(new RadiationZoneSaveData { center = r.center, radius = r.radius, intensity = r.intensity });
+
+            if (GlobalInfluenceManager.Instance != null)
+            {
+                data.globalInfluence = GlobalInfluenceManager.Instance.globalInfluence;
+                data.internationalPrestige = GlobalInfluenceManager.Instance.internationalPrestige;
+                data.crisesSolved = GlobalInfluenceManager.Instance.crisesSolved;
+                data.isWorldLeader = GlobalInfluenceManager.Instance.isWorldLeader;
+                data.yearsOfPeace = GlobalInfluenceManager.Instance.yearsOfPeace;
+            }
+
+            if (GameStateManager.Instance != null) data.hasWon = GameStateManager.Instance.hasWon;
 
             if (StatsManager.Instance != null)
             {
@@ -749,6 +766,17 @@ namespace CaudilloBay.Core
                 zone.radius = rzd.radius;
                 zone.intensity = rzd.intensity;
             }
+
+            if (GlobalInfluenceManager.Instance != null)
+            {
+                GlobalInfluenceManager.Instance.globalInfluence = data.globalInfluence;
+                GlobalInfluenceManager.Instance.internationalPrestige = data.internationalPrestige;
+                GlobalInfluenceManager.Instance.crisesSolved = data.crisesSolved;
+                GlobalInfluenceManager.Instance.isWorldLeader = data.isWorldLeader;
+                GlobalInfluenceManager.Instance.yearsOfPeace = data.yearsOfPeace;
+            }
+
+            if (GameStateManager.Instance != null) GameStateManager.Instance.hasWon = data.hasWon;
 
             if (Economy.CorporationManager.Instance != null)
             {
