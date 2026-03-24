@@ -55,7 +55,15 @@ namespace CaudilloBay.AI
             }
 
             averageSatisfaction = satSum / allCitizens.Count;
-            unemploymentRate = (float)unemployedCount / allCitizens.Count;
+
+            // Automation displacement penalty
+            float automationPenalty = 0f;
+            if (Systems.Automation.AutomationManager.Instance != null)
+            {
+                automationPenalty = Systems.Automation.AutomationManager.Instance.automationInducedUnemployment;
+            }
+
+            unemploymentRate = ((float)unemployedCount / allCitizens.Count) + automationPenalty;
 
             // Handle Demographic cycle monthly
             foreach (var c in allCitizens)

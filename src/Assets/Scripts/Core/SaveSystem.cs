@@ -275,6 +275,11 @@ namespace CaudilloBay.Core
             public List<SpaceMissionSaveData> spaceMissions = new List<SpaceMissionSaveData>();
             public float usaSpaceProgress;
             public float ussrSpaceProgress;
+            public float automationUnemployment;
+            public float aiConsciousness;
+            public float robotCount;
+            public float synthCount;
+            public bool isUprising;
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -497,6 +502,19 @@ namespace CaudilloBay.Core
             {
                 data.usaSpaceProgress = Systems.Space.SpaceRaceManager.Instance.usaProgress;
                 data.ussrSpaceProgress = Systems.Space.SpaceRaceManager.Instance.ussrProgress;
+            }
+
+            if (Systems.Automation.AutomationManager.Instance != null)
+            {
+                data.automationUnemployment = Systems.Automation.AutomationManager.Instance.automationInducedUnemployment;
+                data.aiConsciousness = Systems.Automation.AutomationManager.Instance.aiConsciousness;
+                data.robotCount = Systems.Automation.AutomationManager.Instance.robotPopulation;
+                data.synthCount = Systems.Automation.AutomationManager.Instance.syntheticPopulation;
+            }
+
+            if (Systems.Automation.AISystem.Instance != null)
+            {
+                data.isUprising = Systems.Automation.AISystem.Instance.isUprisingActive;
             }
 
             if (StatsManager.Instance != null)
@@ -833,6 +851,19 @@ namespace CaudilloBay.Core
             {
                 Systems.Space.SpaceRaceManager.Instance.usaProgress = data.usaSpaceProgress;
                 Systems.Space.SpaceRaceManager.Instance.ussrProgress = data.ussrSpaceProgress;
+            }
+
+            if (Systems.Automation.AutomationManager.Instance != null)
+            {
+                Systems.Automation.AutomationManager.Instance.automationInducedUnemployment = data.automationUnemployment;
+                Systems.Automation.AutomationManager.Instance.aiConsciousness = data.aiConsciousness;
+                Systems.Automation.AutomationManager.Instance.robotPopulation = data.robotCount;
+                Systems.Automation.AutomationManager.Instance.syntheticPopulation = data.synthCount;
+            }
+
+            if (Systems.Automation.AISystem.Instance != null)
+            {
+                Systems.Automation.AISystem.Instance.isUprisingActive = data.isUprising;
             }
 
             if (Economy.CorporationManager.Instance != null)

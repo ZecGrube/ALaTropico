@@ -124,7 +124,14 @@ namespace CaudilloBay.Economy
                 totalUtilityMaintenance = buildings.Count * 10f;
             }
 
-            treasuryBalance += (grossTax + totalCorporateTaxes + totalIncomeTax - corruptionLoss - totalMaintenance - totalUtilityMaintenance);
+            // Robot Maintenance
+            float robotMaintenance = 0f;
+            if (Systems.Automation.AutomationManager.Instance != null)
+            {
+                robotMaintenance = Systems.Automation.AutomationManager.Instance.robotPopulation * 5f;
+            }
+
+            treasuryBalance += (grossTax + totalCorporateTaxes + totalIncomeTax - corruptionLoss - totalMaintenance - totalUtilityMaintenance - robotMaintenance);
             // Social Security goes to a separate fund (not implemented here but tracked)
             Debug.Log($"Social Security collected: ${totalSocialSecurity}");
 
