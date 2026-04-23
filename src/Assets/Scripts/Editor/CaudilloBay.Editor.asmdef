@@ -1,0 +1,20 @@
+{
+    "name": "CaudilloBay.Editor",
+    "rootNamespace": "CaudilloBay.Editor",
+    "references": [
+        "CaudilloBay",
+        "Unity.TestTools.CodeCoverage.Editor",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
