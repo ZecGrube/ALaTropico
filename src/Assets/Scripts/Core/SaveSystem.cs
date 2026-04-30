@@ -97,6 +97,15 @@ namespace CaudilloBay.Core
         }
 
         [System.Serializable]
+        public class EcosystemSaveData
+        {
+            public List<Ecology.EcosystemZone> zones = new List<Ecology.EcosystemZone>();
+            public float globalReforestationRate;
+            public float antiPoachingStrength;
+            public bool isHuntingLegal;
+        }
+
+        [System.Serializable]
         public class GameSaveData
         {
             public GameMode mode;
@@ -127,6 +136,7 @@ namespace CaudilloBay.Core
             public float blackMarketMoney;
             public HeirSaveData rulerData;
             public List<HeirSaveData> heirs = new List<HeirSaveData>();
+            public EcosystemSaveData ecosystem;
         }
 
         public void SaveGame(string fileName = "savegame.json")
@@ -257,6 +267,17 @@ namespace CaudilloBay.Core
                 {
                     data.heirs.Add(BuildHeirSaveData(heir));
                 }
+            }
+
+            if (Ecology.EcosystemManager.Instance != null)
+            {
+                data.ecosystem = new EcosystemSaveData
+                {
+                    zones = new List<Ecology.EcosystemZone>(Ecology.EcosystemManager.Instance.zones),
+                    globalReforestationRate = Ecology.EcosystemManager.Instance.globalReforestationRate,
+                    antiPoachingStrength = Ecology.EcosystemManager.Instance.antiPoachingStrength,
+                    isHuntingLegal = Ecology.EcosystemManager.Instance.isHuntingLegal
+                };
             }
 
             if (StatsManager.Instance != null)
@@ -435,6 +456,14 @@ namespace CaudilloBay.Core
                     }
                 }
                 DynastyManager.Instance.UpdateHeirSupportFromFactions();
+            }
+
+            if (data.ecosystem != null && Ecology.EcosystemManager.Instance != null)
+            {
+                Ecology.EcosystemManager.Instance.zones = data.ecosystem.zones;
+                Ecology.EcosystemManager.Instance.globalReforestationRate = data.ecosystem.globalReforestationRate;
+                Ecology.EcosystemManager.Instance.antiPoachingStrength = data.ecosystem.antiPoachingStrength;
+                Ecology.EcosystemManager.Instance.isHuntingLegal = data.ecosystem.isHuntingLegal;
             }
 
             // Restore buildings
