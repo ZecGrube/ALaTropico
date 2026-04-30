@@ -11,6 +11,7 @@ namespace CaudilloBay.Politics
         public List<Agent> agentPool = new List<Agent>();
         public List<Bodyguard> bodyguards = new List<Bodyguard>();
         public List<ActiveMission> activeMissions = new List<ActiveMission>();
+        public List<Colonization.Colony> discoveredIslands = new List<Colonization.Colony>();
 
         [Header("Diplomacy")]
         public List<Data.Sanction> activeSanctions = new List<Data.Sanction>();
@@ -142,6 +143,15 @@ namespace CaudilloBay.Politics
 
             MilitaryManager.Instance.AddForeignSupport(support);
             return support;
+        }
+
+        public void DiscoverIsland(string islandId, string name)
+        {
+            if (!discoveredIslands.Exists(i => i.islandId == islandId))
+            {
+                discoveredIslands.Add(new Colonization.Colony { islandId = islandId, name = name });
+                Debug.Log($"New island discovered: {name}!");
+            }
         }
 
         private void InitializeBodyguards()
