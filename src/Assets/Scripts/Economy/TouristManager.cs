@@ -33,8 +33,14 @@ namespace CaudilloBay.Economy
                 cultureMultiplier = CultureManager.Instance.GetTourismMultiplier();
             }
 
+            float ecoBonus = 0f;
+            if (Ecology.EcosystemManager.Instance != null)
+            {
+                ecoBonus = Ecology.EcosystemManager.Instance.GetEcoTourismBonus();
+            }
+
             // Simplified flow calculation
-            float targetTourists = totalAttractiveness * safetyFactor * cultureMultiplier * 10f;
+            float targetTourists = (totalAttractiveness + ecoBonus) * safetyFactor * cultureMultiplier * 10f;
             currentTourists = Mathf.RoundToInt(Mathf.Lerp(currentTourists, targetTourists, 0.1f));
 
             float income = currentTourists * monthlyIncomePerTourist;

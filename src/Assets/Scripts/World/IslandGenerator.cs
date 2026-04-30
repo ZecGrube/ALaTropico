@@ -70,7 +70,14 @@ namespace CaudilloBay.World
         private void Start()
         {
             // Usually triggered by GameStateManager now, but keep as fallback
-            if (islandParent == null) GenerateIsland();
+            if (islandParent == null)
+            {
+                GenerateIsland();
+                if (Ecology.EcosystemManager.Instance != null)
+                {
+                    Ecology.EcosystemManager.Instance.InitializeZones(width, height);
+                }
+            }
         }
     }
 }

@@ -1,0 +1,64 @@
+name: Unity Tests & Coverage
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  test:
+    name: Run Unity Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: src/Library
+          key: Library-src-${{ hashFiles('src/Packages/manifest.json') }}
+          restore-keys: |
+            Library-src-
+
+      - name: Debug Project Path
+        run: |
+          ls -R src/ProjectSettings/
+          cat src/ProjectSettings/ProjectVersion.txt
+
+      - name: Run All Tests with Coverage
+        uses: game-ci/unity-test-runner@v2
+        id: unityTests
+        with:
+          projectPath: src
+          testMode: all
+          artifactsPath: artifacts
+          coverageOptions: 'generateHtmlReport;generateCoberturaReport;generateBadgeReport'
+
+      - name: Verify Critical Module Coverage
+        uses: game-ci/unity-builder@v2
+        with:
+          projectPath: src
+          buildMethod: CaudilloBay.Editor.CoverageGuard.RunGuard
+          customParameters: -coverageReportPath artifacts/CodeCoverage/CaudilloBay-opencov/Cobertura.xml
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Test Results
+          path: artifacts
+
+      - name: Publish Coverage Report
+        uses: 5monkeys/cobertura-action@master
+        with:
+          path: artifacts/CodeCoverage/CaudilloBay-opencov/Cobertura.xml
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          minimum_coverage: 70
+          fail_below_threshold: true

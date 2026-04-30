@@ -37,6 +37,13 @@ namespace CaudilloBay.Core
             if (StatsManager.Instance != null)
                 baseDecay -= StatsManager.Instance.globalPollution * 0.05f;
 
+            // Ecology bonus
+            float ecologyBonus = 0f;
+            if (Ecology.EcosystemManager.Instance != null)
+            {
+                ecologyBonus = Ecology.EcosystemManager.Instance.GetTotalBiodiversity() * 0.05f;
+            }
+
             // Medical bonus
             float medicalBonus = 0f;
             foreach (var b in medicalBuildings)
@@ -48,7 +55,7 @@ namespace CaudilloBay.Core
                 }
             }
 
-            monthlyHealthDecay = baseDecay + medicalBonus;
+            monthlyHealthDecay = baseDecay + medicalBonus + ecologyBonus;
             if (isEpidemicActive) monthlyHealthDecay -= 10.0f;
         }
 

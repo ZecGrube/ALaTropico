@@ -7,7 +7,7 @@ namespace CaudilloBay.Core
     {
         public static ObjectPool Instance { get; private set; }
 
-        private Dictionary<string, Queue<GameObject>> poolDictionary = new Dictionary<string, Queue<GameObject>>();
+        private Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
 
         private void Awake()
         {
@@ -15,48 +15,32 @@ namespace CaudilloBay.Core
             else Destroy(gameObject);
         }
 
-        public void CreatePool(string key, GameObject prefab, int initialSize)
+        public GameObject Get(GameObject prefab, Vector3 position, Quaternion rotation)
         {
-            if (!poolDictionary.ContainsKey(key))
-            {
-                poolDictionary.Add(key, new Queue<GameObject>());
+            string key = prefab.name;
+            if (!pools.ContainsKey(key)) pools[key] = new Queue<GameObject>();
 
-                for (int i = 0; i < initialSize; i++)
-                {
-                    GameObject obj = Instantiate(prefab);
-                    obj.SetActive(false);
-                    poolDictionary[key].Enqueue(obj);
-                }
+            GameObject obj;
+            if (pools[key].Count > 0)
+            {
+                obj = pools[key].Dequeue();
+                obj.SetActive(true);
+                obj.transform.position = position;
+                obj.transform.rotation = rotation;
             }
+            else
+            {
+                obj = Instantiate(prefab, position, rotation);
+            }
+            return obj;
         }
 
-        public GameObject SpawnFromPool(string key, Vector3 position, Quaternion rotation)
+        public void ReturnToPool(GameObject obj)
         {
-            if (!poolDictionary.ContainsKey(key))
-            {
-                Debug.LogWarning($"Pool with key {key} doesn't exist.");
-                return null;
-            }
-
-            GameObject objToSpawn = poolDictionary[key].Count > 0 ? poolDictionary[key].Dequeue() : null;
-
-            if (objToSpawn == null)
-            {
-                // Optionally expand pool here
-                return null;
-            }
-
-            objToSpawn.SetActive(true);
-            objToSpawn.transform.position = position;
-            objToSpawn.transform.rotation = rotation;
-
-            return objToSpawn;
-        }
-
-        public void ReturnToPool(string key, GameObject obj)
-        {
+            string key = obj.name.Replace("(Clone)", "");
             obj.SetActive(false);
-            poolDictionary[key].Enqueue(obj);
+            if (!pools.ContainsKey(key)) pools[key] = new Queue<GameObject>();
+            pools[key].Enqueue(obj);
         }
     }
 }
