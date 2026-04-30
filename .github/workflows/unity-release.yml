@@ -1,0 +1,40 @@
+name: Unity Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    name: Build for all platforms
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        targetPlatform:
+          - StandaloneWindows64
+          - StandaloneLinux64
+          - StandaloneOSX
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/cache@v4
+        with:
+          path: src/Library
+          key: Library-build-${{ matrix.targetPlatform }}-${{ hashFiles('src/Packages/manifest.json') }}
+          restore-keys: |
+            Library-build-${{ matrix.targetPlatform }}-
+      - uses: game-ci/unity-builder@v2
+        with:
+          projectPath: src
+          unityVersion: 2022.3.16f1
+          targetPlatform: ${{ matrix.targetPlatform }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Build-${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
